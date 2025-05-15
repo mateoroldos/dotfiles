@@ -1,0 +1,10 @@
+# GNU compiler collection
+brew "gcc"
+# Fast, highly customisable system info script
+brew "neofetch"
+# Cross-shell prompt for astronauts
+brew "starship"
+# Organize software neatly under a single directory tree (e.g. /usr/local)
+brew "stow"
+# UNIX shell (command interpreter)
+brew "zsh"
