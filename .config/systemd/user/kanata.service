@@ -1,0 +1,11 @@
+[Unit]
+Description=Kanata keyboard remapper
+After=graphical.target
+
+[Service]
+Type=simple
+ExecStart=/home/linuxbrew/.linuxbrew/bin/kanata --cfg %h/.config/kanata/kanata.kbd
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
