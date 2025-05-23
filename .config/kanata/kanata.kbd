@@ -1,13 +1,36 @@
-;; Caps to escape/control configuration for Kanata
+(defcfg
+  process-unmapped-keys yes
+)
 
 (defsrc
-  caps
+  caps h j k l
+)
+
+(deffakekeys
+  nav-mode (layer-while-held nav)
+  ctrl-mode lctl
 )
 
 (defalias
-  escctrl (tap-hold 100 100 esc lctl)
+  ;; Tap for Esc, hold for both Control and nav layer activation
+  caps-esc-ctrl-nav (tap-hold-press 100 100 esc (multi
+    (on-press-fakekey ctrl-mode press)
+    (on-press-fakekey nav-mode press)
+    (on-release-fakekey nav-mode release)
+    (on-release-fakekey ctrl-mode release)
+  ))
+  
+  ;; Arrow keys that release Control while being pressed
+  lft (multi (release-key lctl) left (on-press-fakekey ctrl-mode press))
+  dwn (multi (release-key lctl) down (on-press-fakekey ctrl-mode press))
+  upp (multi (release-key lctl) up (on-press-fakekey ctrl-mode press))
+  rgt (multi (release-key lctl) right (on-press-fakekey ctrl-mode press))
 )
 
 (deflayer base
-  @escctrl
+  @caps-esc-ctrl-nav h j k l
+)
+
+(deflayer nav
+  _ @lft @dwn @upp @rgt
 )
