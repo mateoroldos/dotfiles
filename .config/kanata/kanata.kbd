@@ -3,7 +3,7 @@
 )
 
 (defsrc
-  caps h j k l
+  caps j k
 )
 
 (deffakekeys
@@ -21,16 +21,14 @@
   ))
   
   ;; Arrow keys that release Control while being pressed
-  lft (multi (release-key lctl) left (on-press-fakekey ctrl-mode press))
   dwn (multi (release-key lctl) down (on-press-fakekey ctrl-mode press))
   upp (multi (release-key lctl) up (on-press-fakekey ctrl-mode press))
-  rgt (multi (release-key lctl) right (on-press-fakekey ctrl-mode press))
 )
 
 (deflayer base
-  @caps-esc-ctrl-nav h j k l
+  @caps-esc-ctrl-nav j k
 )
 
 (deflayer nav
-  _ @lft @dwn @upp @rgt
+  _ @dwn @upp
 )
