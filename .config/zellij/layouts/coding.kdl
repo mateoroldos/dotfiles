@@ -1,31 +1,42 @@
 layout {
-  tab name="Dev" {
-    pane size=1 borderless=true {
-        plugin location="tab-bar"
+    new_tab_template{
+        pane size=1 borderless=true {
+            plugin location="tab-bar"
+        }
+        pane {
+            children
+        }
+        pane size=1 borderless=true {
+           plugin location="status-bar"
+         }
     }
-    pane size="60%" {
-      command "zsh"
+    tab name="Code" focus=true {
+        pane size=1 borderless=true {
+            plugin location="tab-bar"
+        }
+        pane command="nvim" {
+        }
+        pane size=1 borderless=true {
+            plugin location="status-bar"
+        }
     }
-    pane {
-      command "zsh"
+    tab name="Exec" {
+        pane size=1 borderless=true {
+            plugin location="tab-bar"
+        }
+        pane
+        pane size=1 borderless=true {
+            plugin location="status-bar"
+        }
     }
-    pane size=1 borderless=true {
-        plugin location="status-bar"
+    tab name="Git" {
+        pane size=1 borderless=true {
+            plugin location="tab-bar"
+        }
+        pane command="lazygit"{
+        }
+        pane size=1 borderless=true {
+            plugin location="status-bar"
+        }
     }
-  }
-  tab name="Git" {
-    pane size=1 borderless=true {
-        plugin location="tab-bar"
-    }
-    pane size="80%" {
-      command "lazygit"
-    }
-    pane {
-      command "zsh"
-    }
-     pane size=1 borderless=true {
-        plugin location="status-bar"
-    }
-  }
 }
-
