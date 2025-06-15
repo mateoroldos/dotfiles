@@ -1,6 +1,3 @@
-[manager]
-show_hidden = true
-
 [flavor]
 dark = "kenso-zen"
 light = "kenso-zen"

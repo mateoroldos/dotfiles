@@ -8,6 +8,7 @@
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
   "agent": {
+    "default_profile": "write",
     "default_model": {
       "provider": "zed.dev",
       "model": "claude-sonnet-4-latest"
@@ -23,7 +24,7 @@
   "theme": {
     "mode": "system",
     "light": "Catppuccin Mocha",
-    "dark": "Kanagawa Dragon"
+    "dark": "Kanso Ink (Borderless)"
   },
   "autosave": "on_focus_change",
   "relative_line_numbers": true,

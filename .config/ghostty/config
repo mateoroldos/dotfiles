@@ -41,7 +41,7 @@
 # # which is explained in the docs for that config option.
 # # Just for example:
 # resize-overlay-duration = 4s 200ms
-theme = Kanagawa Dragon
+theme = kanso-zen
 background-opacity = 0.98
 font-size = 9
 window-padding-x = 8 

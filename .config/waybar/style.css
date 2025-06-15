@@ -1,127 +1,99 @@
-@import "mocha.css"; 
-
 * {
-    font-family: "MesloLGS Nerd Font Mono Bold";
-    font-size: 16px;
-    min-height: 0;
-    font-weight: bold;
+  border: none;
+  border-radius: 0;
+  min-height: 0;
+  font-family: "MesloLGS Nerd Font Mono Bold";
+  font-weight: 500;
+  font-size: 12px;
+  padding: 0;
 }
 
 window#waybar {
-    background: transparent;
-    background-color: @crust;
-    color: @overlay0;
-    transition-property: background-color;
-    transition-duration: 0.1s;
-    border-bottom: 1px solid @overlay1;
+  background: transparent;
 }
 
-#window {
-    margin: 8px;
-    padding-left: 8;
-    padding-right: 8;
+tooltip {
+  background-color: #223249; /* waveBlue1 */
+  border: 2px solid #2d4f67; /* waveBlue2 */
 }
 
-button {
-    box-shadow: inset 0 -3px transparent;
-    border: none;
-    border-radius: 0;
+#clock,
+#tray,
+#cpu,
+#memory,
+#battery,
+#network,
+#pulseaudio {
+  margin: 6px 6px 6px 0px;
+  padding: 2px 8px;
 }
 
-button:hover {
-    background: inherit;
-    color: @mauve;
-    border-top: 2px solid @mauve;
+#workspaces {
+  background-color: #2a2a37; /* sumiInk2 */
+  margin: 6px 0px 6px 6px;
+  border: 2px solid #363646; /* waveSurface */
 }
 
 #workspaces button {
-    padding: 0 4px;
+  all: initial;
+  min-width: 0;
+  box-shadow: inset 0 -3px transparent;
+  padding: 2px 4px;
+  color: #c8c093; /* oldWhite */
 }
 
 #workspaces button.focused {
-    background-color: rgba(0, 0, 0, 0.3);
-    color: @rosewater;
-    border-top: 2px solid @rosewater;
-}
-
-#workspaces button.active {
-    background-color: rgba(0, 0, 0, 0.3);
-    color: @mauve;
-    border-top: 2px solid @mauve;
+  color: #dcd7ba; /* fujiWhite */
 }
 
 #workspaces button.urgent {
-    background-color: #eb4d4b;
+  background-color: #ff5d62; /* samuraiRed */
+  color: #1f1f28;
 }
 
-#pulseaudio,
-#clock,
-#battery,
-#cpu,
-#memory,
-#disk,
-#temperature,
-#backlight,
-#wireplumber,
-#tray,
-#network,
-#mode,
-#scratchpad {
-  margin-top: 2px;
-  margin-bottom: 2px;
-  margin-left: 4px;
-  margin-right: 4px;
-  padding-left: 4px;
-  padding-right: 4px;
+#workspaces button.active,
+#workspaces button.active:hover {
+  background: #76946a; /* autumnGreen */
+  color: #1f1f28; /* sumiInk1 */
 }
 
 #clock {
-    color: @maroon;
-    border-bottom: 2px solid @maroon;
+  background-color: #2a2a37; /* sumiInk2 */
+  border: 2px solid #363646; /* waveSurface */
+  color: #dcd7ba; /* fujiWhite */
 }
 
-#clock.date {
-    color: @mauve;
-    border-bottom: 2px solid @mauve;
-}
-
-#pulseaudio {
-    color: @blue;
-    border-bottom: 2px solid @blue;
-}
-
-#network {
-    color: @yellow;
-    border-bottom: 2px solid @yellow;
-}
-
-#idle_inhibitor {
-    margin-right: 12px;
-    color: #7cb342;
-}
-
-#idle_inhibitor.activated {
-    color: @red;
+#tray {
+  background-color: #c8c093; /* oldWhite */
+  border: 2px solid #a6a69c; /* stone */
 }
 
 #battery {
-    color: @green;
-    border-bottom: 2px solid @green;
+  background-color: #a6cc70; /* springGreen */
+  border: 2px solid #a6a69c; /* stone */
+  color: #1f1f28; /* sumiInk1 */
 }
 
-/* If workspaces is the leftmost module, omit left margin */
-.modules-left>widget:first-child>#workspaces {
-    margin-left: 0;
+#cpu,
+#memory,
+#network,
+#pulseaudio {
+  background-color: #dcd7ba; /* fujiWhite */
+  border: 2px solid #a6a69c; /* stone */
+  color: #1f1f28; /* sumiInk1 */
 }
 
-/* If workspaces is the rightmost module, omit right margin */
-.modules-right>widget:last-child>#workspaces {
-    margin-right: 0;
+#cpu.critical,
+#memory.critical {
+  background-color: #dcd7ba; /* fujiWhite */
+  border: 2px solid #a6a69c;
+  color: #c34043; /* lotusRed */
 }
 
-#custom-vpn {
-    color: @lavender;
-    border-radius: 15px;
-    padding-left: 6px;
-    padding-right: 6px;
+#battery.warning,
+#battery.critical,
+#battery.urgent {
+  background-color: #dcd7ba; /* fujiWhite */
+  border: 2px solid #a6a69c;
+  color: #c34043; /* lotusRed */
 }
