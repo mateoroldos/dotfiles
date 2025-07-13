@@ -1,6 +1,16 @@
-[manager]
+[mgr]
 show_hidden = true
 
 [flavor]
 dark = "kenso-zen"
 light = "kenso-zen"
+
+[[plugin.prepend_fetchers]]
+id   = "git"
+name = "*"
+run  = "git"
+
+[[plugin.prepend_fetchers]]
+id   = "git"
+name = "*/"
+run  = "git"

@@ -1,0 +1,4 @@
+[mgr]
+prepend_keymap = [
+  { on = [ "g", "r" ], run = "plugin git-files", desc = "Show Git file changes" },
+]

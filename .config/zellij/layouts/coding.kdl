@@ -20,50 +20,21 @@ layout {
             plugin location="status-bar"
         }
     }
+    tab name="Assistant" {
+      pane size=1 borderless=true {
+        plugin location="tab-bar"
+      }
+      pane command="opencode" {
+      }
+      pane size=1 borderless=true {
+        plugin location="status-bar"
+      }
+    }
     tab name="Exec" {
         pane size=1 borderless=true {
             plugin location="tab-bar"
         }
         pane
-        pane size=1 borderless=true {
-            plugin location="status-bar"
-        }
-    }
-    tab name="Git" {
-        pane size=1 borderless=true {
-            plugin location="tab-bar"
-        }
-        pane command="lazygit"{
-        }
-        pane size=1 borderless=true {
-            plugin location="status-bar"
-        }
-    }
-
-    tab name="Track" split_direction="horizontal" {
-        pane size=1 borderless=true {
-            plugin location="tab-bar"
-        }
-
-        pane split_direction="horizontal" {
-            pane size="60%" {
-                command "sh"
-                args "-c" "while true; do clear; echo '🚀 WORK DASHBOARD'; echo '=================='; echo; if command -v timew >/dev/null 2>&1; then timew_output=$(timew 2>/dev/null); if echo \"$timew_output\" | grep -q 'Tracking'; then echo '⏱️  STATUS: 🟢 ACTIVELY TRACKING'; echo; task_line=$(echo \"$timew_output\" | grep 'Tracking' | head -1); task_info=$(echo \"$task_line\" | sed 's/Tracking //' | sed 's/\"//g'); current_time=$(echo \"$timew_output\" | grep 'Current' | awk '{print $2}'); if [ -n \"$current_time\" ]; then if echo \"$current_time\" | grep -q ':'; then mins=$(echo \"$current_time\" | cut -d':' -f1); secs=$(echo \"$current_time\" | cut -d':' -f2); duration_display=$(printf \"00:%02d:%02d\" $mins $secs); else duration_display='00:00:00'; fi; else duration_display='00:00:00'; fi; echo \"📋 Task: ${task_info:-No task}\"; echo; echo \"⏰ DURATION:\"; echo \"$duration_display\" | figlet -f big 2>/dev/null || echo \"$duration_display\"; echo; echo '📊 Today Summary:'; timew summary :day 2>/dev/null | tail -n 8; else echo '⏱️  STATUS: 🔴 NOT TRACKING'; echo; echo '📊 Today Summary:'; timew summary :day 2>/dev/null | tail -n 8; fi; else echo '❌ TimeWarrior not installed'; echo 'Run: brew install timewarrior'; fi; echo; echo '📈 This Week Overview:'; if command -v timew >/dev/null 2>&1; then timew summary :week 2>/dev/null | tail -n 6; fi; echo; echo '💡 Auto-refreshing every 5 seconds...'; sleep 5; done"
-            }
-
-            pane size="40%" split_direction="vertical" {
-                pane {
-                    command "sh"
-                    args "-c" "clear; echo '📋 PROJECT TODOS'; echo '================'; if [ -f './TODO.md' ]; then incomplete=$(grep -c '^[[:space:]]*[-*][[:space:]]*\\[[[:space:]]\\]' './TODO.md' 2>/dev/null || echo 0); completed=$(grep -c '^[[:space:]]*[-*][[:space:]]*\\[[xX]\\]' './TODO.md' 2>/dev/null || echo 0); echo; echo \"📊 Status: $incomplete pending, $completed done\"; echo; if [ $incomplete -gt 0 ]; then echo '🔲 Next Tasks:'; grep '^[[:space:]]*[-*][[:space:]]*\\[[[:space:]]\\]' './TODO.md' 2>/dev/null | head -n 5 | sed 's/^[[:space:]]*[-*][[:space:]]*\\[[[:space:]]\\][[:space:]]*/  • /'; else echo '🎉 All tasks complete!'; fi; else echo '📝 No TODO.md found'; echo; echo 'Current Directory:'; pwd | sed 's|.*/||'; fi; echo; echo '📍 Project Context:'; current_path=$(pwd); if echo \"$current_path\" | grep -q '/Projects/'; then relative_path=$(echo \"$current_path\" | sed 's|.*/Projects/||'); client=$(echo \"$relative_path\" | cut -d'/' -f1); repo=$(echo \"$relative_path\" | cut -d'/' -f2); echo \"  Client: $client\"; echo \"  Repo: $repo\"; else echo '  Outside Projects folder'; fi; echo; echo '💡 Run \"todos\" to refresh'"
-                }
-
-                pane {
-                    command "sh"
-                    args "-c" "echo '⚡ QUICK COMMANDS'; echo '================'; echo; echo '🕐 Time Tracking:'; echo '  work           # Start work session'; echo '  stop           # End work session'; echo '  track \"task\"   # Track specific task'; echo '  status         # Show current status'; echo; echo '📋 TODO Management:'; echo '  todos          # Show pending TODOs'; echo '  todos -A       # Show all TODOs'; echo '  todos -D       # Show completed'; echo; echo '📁 Project Commands:'; echo '  clients        # List all clients'; echo; echo '⏱️  TimeWarrior Direct:'; echo '  timew start [tags]'; echo '  timew stop'; echo '  timew summary :day'; echo; echo '💡 Tips:'; echo '- Use your custom commands above'; echo '- Run commands to refresh info'; echo '- TODO.md auto-detected in projects'; echo; echo 'Ready for commands...'"
-                }
-            }
-        }
-
         pane size=1 borderless=true {
             plugin location="status-bar"
         }

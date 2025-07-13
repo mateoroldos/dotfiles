@@ -3,32 +3,18 @@
 )
 
 (defsrc
-  caps j k
+  caps
 )
 
 (deffakekeys
-  nav-mode (layer-while-held nav)
   ctrl-mode lctl
 )
 
 (defalias
-  ;; Tap for Esc, hold for both Control and nav layer activation
-  caps-esc-ctrl-nav (tap-hold-press 100 100 esc (multi
-    (on-press-fakekey ctrl-mode press)
-    (on-press-fakekey nav-mode press)
-    (on-release-fakekey nav-mode release)
-    (on-release-fakekey ctrl-mode release)
-  ))
-  
-  ;; Arrow keys that release Control while being pressed
-  dwn (multi (release-key lctl) down (on-press-fakekey ctrl-mode press))
-  upp (multi (release-key lctl) up (on-press-fakekey ctrl-mode press))
+  caps-ctrl (multi (on-press-fakekey ctrl-mode press) (on-release-fakekey ctrl-mode release))
 )
 
 (deflayer base
-  @caps-esc-ctrl-nav j k
+  @caps-ctrl
 )
 
-(deflayer nav
-  _ @dwn @upp
-)
