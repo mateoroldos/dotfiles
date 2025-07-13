@@ -10,6 +10,26 @@ keybinds clear-defaults=true {
         unbind "Ctrl o"
         // uncomment this and adjust key if using copy_on_select=false
         // bind "Alt c" { Copy; }
+        //
+        // CUSTOM FLOATING WINDOWS
+        bind "Ctrl l" {
+          Run "lazygit" {
+            floating true
+            height 50
+            width 200
+            x 19
+            y 6
+          }
+        }
+        bind "Ctrl k" {
+          Run "opencode" {
+            floating true
+            height 50
+            width 200
+            x 19
+            y 6
+          }
+        }
     }
     locked {
         bind "Ctrl g" { SwitchToMode "Normal"; }
