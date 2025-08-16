@@ -42,7 +42,7 @@
 # # Just for example:
 # resize-overlay-duration = 4s 200ms
 theme = kanso-zen
-background-opacity = 0.98
+background-opacity = 0.90
 font-size = 9
 window-padding-x = 8 
 window-padding-y = 8
