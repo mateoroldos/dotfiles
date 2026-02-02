@@ -1,0 +1,13 @@
+/**
+ * Usage Plugin Configuration
+ */
+{
+  "endpoint": "",
+  "apiKey": "",
+  "timeout": 10000,
+  "providers": {
+    "openai": true,
+    "proxy": true,
+    "copilot": true
+  }
+}

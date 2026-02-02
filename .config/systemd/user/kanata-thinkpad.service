@@ -1,10 +1,10 @@
 [Unit]
-Description=Kanata keyboard remapper
+Description=Kanata for ThinkPad keyboard
 After=graphical.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/kanata --cfg %h/.config/kanata/kanata.kbd
+ExecStart=/usr/bin/kanata --cfg %h/.config/kanata/thinkpad.kbd
 Restart=on-failure
 
 [Install]

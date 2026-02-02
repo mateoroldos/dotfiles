@@ -1,10 +1,12 @@
 export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
 export PATH=$HOME/.local/bin:$PATH
+export PATH="/home/runguinator/.cache/.bun/bin:$PATH"
 
 [ -f ~/.env ] && source ~/.env
 
 eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
+eval "$(fnm env)"
 
 # LOAD NVM
 export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"

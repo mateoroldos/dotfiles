@@ -1,0 +1,2 @@
+- Be extremely concise. Sacrifice grammar for the sake of concision.
+- Don't rush to write code. Analyze things deeply first, understand project patterns and think of different approaches. Focus on output quality over output quantity. Do just the things that I asked you.
