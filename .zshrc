@@ -14,13 +14,18 @@ export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || pr
 
 work() {
     local selection
-    selection=$(find ~/Projects -mindepth 2 -maxdepth 2 -type d | \
-        sed 's|.*/Projects/||' | \
-        sort | \
-        fzf --prompt="Select Project: " --height=40% --reverse)
+    selection=$({
+        find ~/Projects -mindepth 2 -maxdepth 2 -type d | \
+            sed 's|.*/Projects/||'
+        printf "%s\n" dotfiles
+    } | sort | fzf --prompt="Select Project: " --height=40% --reverse)
     
     if [[ -n "$selection" ]]; then
-        cd ~/Projects/"$selection"
+        if [[ "$selection" == "dotfiles" ]]; then
+            cd ~/dotfiles
+        else
+            cd ~/Projects/"$selection"
+        fi
         zellij --layout coding
     fi
 }
