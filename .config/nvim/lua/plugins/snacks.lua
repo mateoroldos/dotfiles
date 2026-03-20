@@ -1,5 +1,15 @@
 return {
   "folke/snacks.nvim",
+  keys = {
+    { "<leader>gd", false },
+    {
+      "<leader>gD",
+      function()
+        Snacks.picker.git_diff()
+      end,
+      desc = "Git Diff (hunks)",
+    },
+  },
   opts = {
     explorer = {
       replace_netrw = false,

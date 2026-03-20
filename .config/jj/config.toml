@@ -6,3 +6,4 @@ email = "mateoroldos19@gmail.com"
 
 [ui]
 diff-editor = ["nvim", "-c", "DiffEditor $left $right $output"]
+diff-instructions = false
