@@ -20,11 +20,15 @@ layout {
             plugin location="status-bar"
         }
     }
-    tab name="Assistant" {
+    tab name="Agents" {
       pane size=1 borderless=true {
         plugin location="tab-bar"
       }
-      pane command="opencode" {
+      pane split_direction="vertical" {
+        pane command="opencode" {
+        }
+        pane command="claude" {
+        }
       }
       pane size=1 borderless=true {
         plugin location="status-bar"

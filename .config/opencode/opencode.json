@@ -2,8 +2,23 @@
   "plugin": [
     "opencode-antigravity-auth@1.6.0",
     "opencode-openai-codex-auth",
-    "@howaboua/opencode-usage-plugin@latest"
+    "@howaboua/opencode-usage-plugin@latest",
+    "@sveltejs/opencode"
   ],
+  "mcp": {
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp"
+    },
+    "gh_grep": {
+      "type": "remote",
+      "url": "https://mcp.grep.app"
+    },
+    "chrome-devtools": {
+      "type": "local",
+      "command": ["npx", "-y", "chrome-devtools-mcp@latest"]
+    }
+  },
   "provider": {
     "google": {
       "name": "Google",

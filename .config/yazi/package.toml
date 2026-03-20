@@ -3,5 +3,10 @@ use = "yazi-rs/plugins:git"
 rev = "b886025"
 hash = "63b6c222bf2103b3023389dde5e2ecfe"
 
+[[plugin.deps]]
+use = "yazi-rs/plugins:vcs-files"
+rev = "1962818"
+hash = "f6e6a829c6dc6c900a75bebe422a5c33"
+
 [flavor]
 deps = []
