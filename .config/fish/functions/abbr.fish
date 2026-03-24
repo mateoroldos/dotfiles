@@ -6,3 +6,5 @@ abbr -a jjl 'jj log'
 abbr -a y yazi
 
 abbr -a w work
+
+abbr -a bth bluetoothctl
