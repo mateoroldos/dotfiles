@@ -1,0 +1,35 @@
+# core
+git
+lazygit
+stow
+fish
+neovim
+btop
+zoxide
+fzf
+bat
+eza
+yazi
+zellij
+jj
+lazyjj
+bluetui
+mise
+kanata
+
+# desktop
+hyprland
+hyprpaper
+hypridle
+hyprlock
+hyprshot
+waybar
+wofi
+swaync
+wl-clipboard
+cliphist
+ghostty
+nautilus
+discord
+bitwarden
+zen-browser-bin

@@ -2,3 +2,5 @@
 # VERSION: 3.0
 SETUVAR __fish_initialized:4300
 SETUVAR __fish_webconfig_theme_notification:set\x2dtheme\x2dv1\x2d\x232
+SETUVAR fish_features:no\x2dquery\x2dterm
+SETUVAR fish_user_paths:/home/runguinator/\x2ecargo/bin\x1e/home/runguinator/\x2ecache/\x2ebun/bin

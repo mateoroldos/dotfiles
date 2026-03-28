@@ -10,6 +10,13 @@
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "markdown", "markdown.mdx" },
   callback = function()
-    vim.diagnostic.disable(0)
+    if type(vim.diagnostic.disable) == "function" then
+      vim.diagnostic.disable(0)
+      return
+    end
+
+    if type(vim.diagnostic.enable) == "function" then
+      pcall(vim.diagnostic.enable, false, { bufnr = 0 })
+    end
   end,
 })

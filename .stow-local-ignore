@@ -1,2 +1,5 @@
 homebrew
 .git
+.jj
+packages
+scripts

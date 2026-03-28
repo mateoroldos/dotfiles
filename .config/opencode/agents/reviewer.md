@@ -1,7 +1,7 @@
 ---
 name: reviewer
 mode: all
-model: openai/gpt-5.2-codex
+model: openai/gpt-5.3-codex
 temperature: 0.2
 description: Reviews changes against a spec and repo conventions.
 tools:

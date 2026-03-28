@@ -7,3 +7,78 @@ email = "mateoroldos19@gmail.com"
 [ui]
 diff-editor = ["nvim", "-c", "DiffEditor $left $right $output"]
 diff-instructions = false
+
+[templates]
+log = "zen_log"
+
+[remotes.origin]
+auto-track-bookmarks = "glob:*"
+
+[template-aliases]
+'zen_log' = 'zen_log(self)'
+'cc_subject(commit)' = '''
+  if(commit.description(),
+    if(commit.description().first_line().starts_with("feat("),
+      label("cc.feat", "feat") ++
+      label("cc.punct", "(") ++
+      label("cc.scope", commit.description().first_line().split(":", 2).first().remove_prefix("feat(").remove_suffix(")")) ++
+      label("cc.punct", "):") ++
+      label("cc.message", commit.description().first_line().split(":", 2).last()),
+      if(commit.description().first_line().starts_with("feat:"),
+        label("cc.feat", "feat") ++ label("cc.punct", ":") ++ label("cc.message", commit.description().first_line().remove_prefix("feat:")),
+        if(commit.description().first_line().starts_with("docs("),
+          label("cc.docs", "docs") ++
+          label("cc.punct", "(") ++
+          label("cc.scope", commit.description().first_line().split(":", 2).first().remove_prefix("docs(").remove_suffix(")")) ++
+          label("cc.punct", "):") ++
+          label("cc.message", commit.description().first_line().split(":", 2).last()),
+          if(commit.description().first_line().starts_with("docs:"),
+            label("cc.docs", "docs") ++ label("cc.punct", ":") ++ label("cc.message", commit.description().first_line().remove_prefix("docs:")),
+            if(commit.description().first_line().starts_with("refactor("),
+              label("cc.refactor", "refactor") ++
+              label("cc.punct", "(") ++
+              label("cc.scope", commit.description().first_line().split(":", 2).first().remove_prefix("refactor(").remove_suffix(")")) ++
+              label("cc.punct", "):") ++
+              label("cc.message", commit.description().first_line().split(":", 2).last()),
+              if(commit.description().first_line().starts_with("refactor:"),
+                label("cc.refactor", "refactor") ++ label("cc.punct", ":") ++ label("cc.message", commit.description().first_line().remove_prefix("refactor:")),
+                label("cc.message", commit.description().first_line())
+              )
+            )
+          )
+        )
+      )
+    ),
+    label("empty description placeholder", "(no description)"),
+  )
+'''
+'zen_log(commit)' = '''
+  separate(" ",
+    commit.change_id().shortest(6),
+    cc_subject(commit),
+    if(commit.empty(), label("empty", "(empty)")),
+    if(commit.conflict(), label("conflict", "(conflict)")),
+    if(commit.divergent(), label("divergent", "(divergent)")),
+    if(commit.bookmarks(), label("bookmarks", commit.bookmarks())),
+    label("author", commit.author().name()),
+  ) ++ "\n"
+'''
+'format_short_change_id(id)' = 'id.shortest(6)'
+'format_short_commit_id(id)' = 'id.shortest(6)'
+
+[colors]
+"bookmarks" = { fg = "yellow" }
+"author"    = { fg = "bright black" }
+"cc.feat" = { fg = "green" }
+"cc.docs" = { fg = "blue" }
+"cc.refactor" = { fg = "cyan" }
+"cc.punct" = { fg = "default", dim = true }
+"cc.scope" = { fg = "default" }
+"cc.message" = { fg = "default", dim = true }
+
+[aliases]
+full      = ["log", "--template", "builtin_log_compact"]
+stack     = ["log", "--template", "zen_log", "-r", "trunk()::@ | @:: | trunk()"]
+mine      = ["log", "-r", "mine() & mutable()"]
+conflicts = ["log", "-r", "conflicts()"]
+bm        = ["bookmark", "list"]

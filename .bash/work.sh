@@ -97,6 +97,25 @@ _work_project_list() {
         *) dotfiles_icon="" ;;
     esac
     printf "%s\t%s\t%s\t%s\n" "dotfiles ${dotfiles_icon}" "$dotfiles_dir" "$dotfiles_session" "$dotfiles_status"
+
+    local vimwiki_dir=~/vimwiki
+    if [[ -d "$vimwiki_dir" ]]; then
+        local vimwiki_name="${vimwiki_dir##*/}"
+        local vimwiki_session
+        local vimwiki_status
+        local vimwiki_icon
+        vimwiki_session=$(_work_session_name "$vimwiki_dir" "$vimwiki_name")
+        vimwiki_status="${_WORK_SESSION_STATUS[$vimwiki_session]}"
+        if [[ -z "$vimwiki_status" ]]; then
+            vimwiki_status="NONE"
+        fi
+        case "$vimwiki_status" in
+            ACTIVE) vimwiki_icon="" ;;
+            EXITED) vimwiki_icon="" ;;
+            *) vimwiki_icon="" ;;
+        esac
+        printf "%s\t%s\t%s\t%s\n" "vimwiki ${vimwiki_icon}" "$vimwiki_dir" "$vimwiki_session" "$vimwiki_status"
+    fi
 }
 
 _work_task_list() {

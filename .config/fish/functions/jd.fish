@@ -54,6 +54,35 @@ function __show_help
     echo "  jd --from a --to b --split   Show diff of each commit between a and b"
 end
 
+function __get_main_workspace_root
+    set -l workspace_root (jj workspace root 2>/dev/null)
+    if test -z "$workspace_root"
+        return 1
+    end
+
+    set -l repo_pointer "$workspace_root/.jj/repo"
+    if test -f "$repo_pointer"
+        set -l repo_rel (string trim (command cat "$repo_pointer"))
+        if test -z "$repo_rel"
+            return 1
+        end
+
+        set -l repo_abs (realpath -m "$workspace_root/.jj/$repo_rel")
+        set -l main_root (dirname (dirname $repo_abs))
+        if test -n "$main_root"
+            echo $main_root
+            return 0
+        end
+    end
+
+    if test -d "$workspace_root/.git"
+        echo $workspace_root
+        return 0
+    end
+
+    return 1
+end
+
 # This is a super useful little function which allows me to run something like
 # `jd xowwtltt` and open the diff in a Neovim Diffview window.
 #
@@ -135,8 +164,36 @@ function jd
     end
 
     if set -q _flag_split
-        nvim -c "DiffviewFileHistory --range=$diff_range --right-only --no-merges"
+        set -l main_root (__get_main_workspace_root)
+        if test $status -eq 0 -a -d "$main_root/.git"
+            string match -q -- "$main_root" (pwd); or string match -q -- "$main_root/"'*' (pwd)
+            set -l is_in_main $status
+            if test $is_in_main -ne 0
+                pushd $main_root >/dev/null
+                nvim -c "DiffviewFileHistory --range=$diff_range --right-only --no-merges"
+                popd >/dev/null
+            else
+                nvim -c "DiffviewFileHistory --range=$diff_range --right-only --no-merges"
+            end
+        else
+            echo "No colocated git repo found for Diffview."
+            return 1
+        end
     else
-        nvim -c "DiffviewOpen $diff_range"
+        set -l main_root (__get_main_workspace_root)
+        if test $status -eq 0 -a -d "$main_root/.git"
+            string match -q -- "$main_root" (pwd); or string match -q -- "$main_root/"'*' (pwd)
+            set -l is_in_main $status
+            if test $is_in_main -ne 0
+                pushd $main_root >/dev/null
+                nvim -c "DiffviewOpen $diff_range"
+                popd >/dev/null
+            else
+                nvim -c "DiffviewOpen $diff_range"
+            end
+        else
+            echo "No colocated git repo found for Diffview."
+            return 1
+        end
     end
 end

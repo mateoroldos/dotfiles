@@ -2,15 +2,17 @@
 show_hidden = true
 
 [flavor]
-dark = "kenso-zen"
-light = "kenso-zen"
+dark = "gruvbox-material"
+light = "gruvbox-material"
 
 [[plugin.prepend_fetchers]]
 id   = "git"
-name = "*"
+url = "*"
 run  = "git"
+group = "git"
 
 [[plugin.prepend_fetchers]]
 id   = "git"
-name = "*/"
+url = "*/"
 run  = "git"
+group = "git"

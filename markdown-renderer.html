@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markdown + LaTeX + Mermaid Renderer</title>
+
+  <!-- KaTeX for LaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Mermaid for diagrams -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+  </script>
+
+  <!-- Marked for Markdown -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #1e1e2e;
+      --fg: #cdd6f4;
+      --surface: #313244;
+      --accent: #89b4fa;
+      --border: #45475a;
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.7;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    header h1 {
+      margin: 0 0 0.5rem;
+      font-size: 2rem;
+      color: var(--accent);
+    }
+
+    header p {
+      margin: 0;
+      opacity: 0.7;
+    }
+
+    .editor-wrap, .preview-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+
+    .editor-wrap label, .preview-wrap label {
+      display: block;
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: rgba(0,0,0,0.15);
+      border-bottom: 1px solid var(--border);
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 320px;
+      padding: 1rem;
+      font-family: 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      background: transparent;
+      color: var(--fg);
+      border: none;
+      outline: none;
+      resize: vertical;
+    }
+
+    #preview {
+      padding: 2rem;
+    }
+
+    /* Markdown content styles */
+    #preview h1, #preview h2, #preview h3 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      color: var(--accent);
+    }
+
+    #preview h1 { font-size: 1.8rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+    #preview h2 { font-size: 1.4rem; }
+    #preview h3 { font-size: 1.1rem; }
+
+    #preview p { margin: 1rem 0; }
+
+    #preview code {
+      background: rgba(0,0,0,0.25);
+      padding: 0.2em 0.4em;
+      border-radius: 4px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.9em;
+    }
+
+    #preview pre {
+      background: rgba(0,0,0,0.3);
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+
+    #preview pre code {
+      background: none;
+      padding: 0;
+    }
+
+    #preview blockquote {
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      border-left: 4px solid var(--accent);
+      background: rgba(137, 180, 250, 0.08);
+      border-radius: 0 8px 8px 0;
+    }
+
+    #preview ul, #preview ol {
+      margin: 1rem 0;
+      padding-left: 1.5rem;
+    }
+
+    #preview li { margin: 0.35rem 0; }
+
+    #preview table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+
+    #preview th, #preview td {
+      padding: 0.6rem 0.8rem;
+      border: 1px solid var(--border);
+      text-align: left;
+    }
+
+    #preview th {
+      background: rgba(0,0,0,0.2);
+      font-weight: 600;
+    }
+
+    #preview tr:nth-child(even) {
+      background: rgba(0,0,0,0.08);
+    }
+
+    /* Mermaid diagram container */
+    .mermaid {
+      display: flex;
+      justify-content: center;
+      margin: 1.5rem 0;
+    }
+
+    /* KaTeX block spacing */
+    .katex-display {
+      margin: 1.5rem 0 !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Markdown + LaTeX + Mermaid Renderer</h1>
+      <p>Type markdown below — inline math with <code>$...$</code>, block math with <code>$$...$$</code>, and mermaid diagrams with <code>```mermaid</code> blocks.</p>
+    </header>
+
+    <div class="editor-wrap">
+      <label for="source">Markdown Source</label>
+      <textarea id="source" spellcheck="false"># Euler's Identity
+
+Euler's identity is often cited as an example of deep mathematical beauty:
+
+$$e^{i\pi} + 1 = 0$$
+
+It combines five fundamental mathematical constants:
+
+| Constant | Value | Description |
+|----------|-------|-------------|
+| $e$ | ~2.71828 | Euler's number |
+| $i$ | $\sqrt{-1}$ | Imaginary unit |
+| $\pi$ | ~3.14159 | Circle constant |
+| $1$ | 1 | Multiplicative identity |
+| $0$ | 0 | Additive identity |
+
+## Derivation
+
+Using Euler's formula:
+
+$$e^{ix} = \cos x + i\sin x$$
+
+Substituting $x = \pi$:
+
+$$e^{i\pi} = \cos \pi + i\sin \pi = -1 + i \cdot 0 = -1$$
+
+> "The most beautiful theorem in mathematics." — Richard Feynman
+
+## Architecture Flow
+
+```mermaid
+graph TD
+    A[Client Request] --> B{Auth?}
+    B -->|Yes| C[Load Balancer]
+    B -->|No| D[Return 401]
+    C --> E[API Gateway]
+    E --> F[Service A]
+    E --> G[Service B]
+    F --> H[(Database)]
+    G --> H
+    F --> I[Cache]
+    G --> I
+```
+
+## Quadratic Formula
+
+For any quadratic equation $ax^2 + bx + c = 0$ where $a \neq 0$:
+
+$$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
+
+The discriminant $\Delta = b^2 - 4ac$ determines the nature of the roots:
+
+- $\Delta > 0$: Two distinct real roots
+- $\Delta = 0$: One repeated real root
+- $\Delta < 0$: Two complex conjugate roots</textarea>
+    </div>
+
+    <div class="preview-wrap">
+      <label>Live Preview</label>
+      <div id="preview"></div>
+    </div>
+  </div>
+
+  <script>
+    const source = document.getElementById('source');
+    const preview = document.getElementById('preview');
+
+    // Mermaid code block renderer
+    const mermaidRenderer = {
+      code(code, infostring) {
+        if (infostring === 'mermaid') {
+          return `<div class="mermaid">\n${code}\n</div>`;
+        }
+        return false; // fall back to default
+      }
+    };
+
+    marked.use({ renderer: mermaidRenderer });
+
+    function render() {
+      // 1. Render markdown
+      const html = marked.parse(source.value);
+      preview.innerHTML = html;
+
+      // 2. Render mermaid diagrams
+      if (window.mermaid) {
+        mermaid.run({ querySelector: '.mermaid' });
+      }
+
+      // 3. Render KaTeX math
+      if (window.renderMathInElement) {
+        renderMathInElement(preview, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$',  right: '$',  display: false }
+          ],
+          throwOnError: false
+        });
+      }
+    }
+
+    // Wait for KaTeX auto-render to be ready
+    function waitForKaTeX() {
+      if (window.renderMathInElement) {
+        source.addEventListener('input', render);
+        render();
+      } else {
+        setTimeout(waitForKaTeX, 50);
+      }
+    }
+    waitForKaTeX();
+
+    // Also wait for mermaid ESM module
+    window.mermaidReady = new Promise((resolve) => {
+      const check = () => {
+        if (window.mermaid) {
+          resolve();
+        } else {
+          setTimeout(check, 50);
+        }
+      };
+      check();
+    });
+  </script>
+</body>
+</html>

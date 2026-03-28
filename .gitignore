@@ -1,2 +1,3 @@
 .config/nvim/lua/plugins/codecompanion.lua
 .opencode
+pi-subagents-lite/node_modules/

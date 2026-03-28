@@ -1,0 +1,20 @@
+{
+  "name": "pi-zen-workflow",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Reviewability-first Zen Workflow for pi with lightweight skills, prompts, and status commands.",
+  "keywords": [
+    "pi-package"
+  ],
+  "pi": {
+    "skills": [
+      "skills"
+    ],
+    "prompts": [
+      "prompts"
+    ]
+  },
+  "peerDependencies": {
+    "@mariozechner/pi-coding-agent": "*"
+  }
+}

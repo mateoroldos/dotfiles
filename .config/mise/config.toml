@@ -1,0 +1,19 @@
+[tools]
+node = "lts"
+usage = "latest"
+
+"npm:typescript" = "latest"
+
+[tasks.bootstrap]
+description = "Bootstrap development environment"
+run = """
+echo "Installing mise tools..."
+mise install
+
+echo "Configuring npm..."
+npm config set prefix ~/.npm-global
+
+echo "Done! Verify:"
+node --version
+npm --version
+"""

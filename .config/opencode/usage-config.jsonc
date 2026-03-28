@@ -6,8 +6,9 @@
   "apiKey": "",
   "timeout": 10000,
   "providers": {
-    "openai": true,
-    "proxy": true,
-    "copilot": true
-  }
+    "openai": false,
+    "proxy": false,
+    "copilot": false,
+    "anthropic": false,
+  },
 }

@@ -1,0 +1,120 @@
+themes {
+  gruvbox-material-dark {
+    text_unselected {
+      background "#32302f"
+      base "#7c6f64"
+      emphasis_0 "#c14a4a"
+      emphasis_1 "#6c782e"
+      emphasis_2 "#b47109"
+      emphasis_3 "#45707a"
+    }
+    text_selected {
+      background "#504945"
+      base "#7c6f64"
+      emphasis_0 "#c14a4a"
+      emphasis_1 "#6c782e"
+      emphasis_2 "#b47109"
+      emphasis_3 "#45707a"
+    }
+    ribbon_unselected {
+      background "#504945"
+      base "#32302f"
+      emphasis_0 "#c14a4a"
+      emphasis_1 "#6c782e"
+      emphasis_2 "#b47109"
+      emphasis_3 "#45707a"
+    }
+    ribbon_selected {
+      background "#a89984"
+      base "#32302f"
+      emphasis_0 "#c14a4a"
+      emphasis_1 "#6c782e"
+      emphasis_2 "#b47109"
+      emphasis_3 "#45707a"
+    }
+    table_cell_unselected {
+      background "#32302f"
+      base "#7c6f64"
+      emphasis_0 "#c14a4a"
+      emphasis_1 "#6c782e"
+      emphasis_2 "#b47109"
+      emphasis_3 "#45707a"
+    }
+    table_cell_selected {
+      background "#504945"
+      base "#7c6f64"
+      emphasis_0 "#c14a4a"
+      emphasis_1 "#6c782e"
+      emphasis_2 "#b47109"
+      emphasis_3 "#45707a"
+    }
+    table_title {
+      background "#32302f"
+      base "#945e80"
+      emphasis_0 "#c14a4a"
+      emphasis_1 "#6c782e"
+      emphasis_2 "#b47109"
+      emphasis_3 "#45707a"
+    }
+    list_unselected {
+      background "#32302f"
+      base "#7c6f64"
+      emphasis_0 "#c14a4a"
+      emphasis_1 "#6c782e"
+      emphasis_2 "#b47109"
+      emphasis_3 "#45707a"
+    }
+    list_selected {
+      background "#504945"
+      base "#7c6f64"
+      emphasis_0 "#c14a4a"
+      emphasis_1 "#6c782e"
+      emphasis_2 "#b47109"
+      emphasis_3 "#45707a"
+    }
+    // frame_unselected #504945
+    frame_selected {
+      background "#32302f"
+      base "#7c6f64"
+      emphasis_0 "#c14a4a"
+      emphasis_1 "#6c782e"
+      emphasis_2 "#b47109"
+      emphasis_3 "#45707a"
+    }
+    frame_highlight {
+      background "#32302f"
+      base "#d8a657"
+      emphasis_0 "#c14a4a"
+      emphasis_1 "#6c782e"
+      emphasis_2 "#b47109"
+      emphasis_3 "#45707a"
+    }
+    exit_code_success {
+      background "#32302f"
+      base "#a9b665"
+      emphasis_0 "#c14a4a"
+      emphasis_1 "#6c782e"
+      emphasis_2 "#b47109"
+      emphasis_3 "#45707a"
+    }
+    exit_code_error {
+      background "#32302f"
+      base "#ea6962"
+      emphasis_0 "#c14a4a"
+      emphasis_1 "#6c782e"
+      emphasis_2 "#b47109"
+      emphasis_3 "#45707a"
+    }
+    // multiplayer_user_colors {
+    //   player_1 "#c14a4a"
+    //   player_2 "#6c782e"
+    //   player_4 "#b47109"
+    //   player_5 "#45707a"
+    //   player_6 "#945e80"
+    //   player_7 "#4c7a5d"
+    //   player_8 "#ea6962"
+    //   player_9 "#a9b665"
+    //   player_10 "#d8a657"
+    // }
+ 	}
+}

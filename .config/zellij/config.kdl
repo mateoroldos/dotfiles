@@ -9,6 +9,9 @@ keybinds clear-defaults=true {
         unbind "Ctrl p"
         unbind "Ctrl o"
         unbind "Ctrl h"
+
+        bind "Alt Tab" { GoToNextTab; }
+
         // uncomment this and adjust key if using copy_on_select=false
         // bind "Alt c" { Copy; }
         //
@@ -56,7 +59,7 @@ keybinds clear-defaults=true {
         bind "k" "Up" { MoveFocus "Up"; }
         bind "p" { SwitchFocus; }
         bind "n" { NewPane; SwitchToMode "Normal"; }
-        bind "d" { NewPane "Down"; SwitchToMode "Normal"; }
+        // bind "d" { NewPane "Down"; SwitchToMode "Normal"; }
         bind "r" { NewPane "Right"; SwitchToMode "Normal"; }
         bind "x" { CloseFocus; SwitchToMode "Normal"; }
         bind "f" { ToggleFocusFullscreen; SwitchToMode "Normal"; }
@@ -65,6 +68,25 @@ keybinds clear-defaults=true {
         bind "e" { TogglePaneEmbedOrFloating; SwitchToMode "Normal"; }
         bind "c" { SwitchToMode "RenamePane"; PaneNameInput 0;}
         bind "i" { TogglePanePinned; SwitchToMode "Normal"; }
+
+        bind "d" {
+            SwitchToMode "Normal";
+            Run "tuicr" "-r" "@" {
+                SwitchToMode "Normal";
+                floating true
+                width "95%"
+                height "95%"
+          }
+        }
+
+
+        bind "s" {
+            Run "jj" "log" {
+                floating true
+                width "60%"
+                height "80%"
+          }
+        }
     }
     move {
         bind "Ctrl m" { SwitchToMode "Normal"; }
@@ -358,7 +380,7 @@ pane_frames: true
 // Choose the theme that is specified in the themes section.
 // Default: default
 //
-theme "kanagawa"
+theme "gruvbox-material-dark"
 
 // The name of the default layout to load on startup
 // Default: "default"

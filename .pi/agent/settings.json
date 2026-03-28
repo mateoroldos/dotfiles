@@ -1,0 +1,16 @@
+{
+  "lastChangelogVersion": "0.74.0",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.5",
+  "defaultThinkingLevel": "low",
+  "theme": "gruvbox-material",
+  "subagents": {
+    "disableBuiltins": true
+  },
+  "packages": [
+    "../../dotfiles/pi-zen-workflow",
+    "npm:pi-web-access",
+    "npm:pi-markdown-preview",
+    "npm:pi-agent-browser-native"
+  ]
+}
