@@ -1,0 +1,27 @@
+# bootstrap (install these manually first on a bare system)
+git
+stow
+
+# shell
+fish
+
+# editor
+neovim
+
+# keyboard
+keyd
+
+# cli tools
+ripgrep
+fd
+fzf
+bat
+eza
+zoxide
+curl
+jq
+jujutsu
+
+# system
+btop
+man-db
