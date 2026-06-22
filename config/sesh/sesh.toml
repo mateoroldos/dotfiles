@@ -1,0 +1,21 @@
+#:schema https://github.com/joshmedeski/sesh/raw/main/sesh.schema.json
+
+[[session]]
+name = "dotfiles"
+path = "~/dotfiles"
+startup_command = 'tmux rename-window "code" && nvim -c "lua Snacks.picker.files()"'
+windows = ["agent"]
+
+[[session]]
+name = "Downloads"
+path = "~/Downloads"
+startup_command = "yazi"
+
+[[wildcard]]
+pattern = "~/Projects/**"
+startup_command = 'tmux rename-window "code" && nvim -c "lua Snacks.picker.files()"'
+windows = ["agent"]
+
+[[window]]
+name = "agent"
+startup_script = "opencode"

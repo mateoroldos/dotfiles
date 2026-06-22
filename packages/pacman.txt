@@ -7,6 +7,10 @@ fish
 
 # editor
 neovim
+opencode
+
+# fonts
+ttf-zed-mono-nerd
 
 # keyboard
 keyd
@@ -21,7 +25,13 @@ zoxide
 curl
 jq
 jujutsu
+yazi
+github-cli
+tmux
 
 # system
 btop
 man-db
+
+# dev env
+mise

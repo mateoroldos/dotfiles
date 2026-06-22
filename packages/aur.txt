@@ -2,3 +2,7 @@
 discord
 spotify
 bitwarden
+
+# cli
+sesh-bin
+tuicr-bin
