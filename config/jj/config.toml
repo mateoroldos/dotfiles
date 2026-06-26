@@ -1,0 +1,18 @@
+[user]
+name = "Mateo Roldos"
+email = "mateoroldos19@gmail.com"
+
+[ui]
+diff-editor = ["nvim", "-c", "DiffEditor $left $right $output"]
+diff-instructions = false
+
+# Minimal `jj log`: override the fragment aliases the builtin template calls,
+# rather than replacing templates.log — so future jj upgrades still flow through.
+[colors]
+# `prompt_dirty` is our own label, emitted by fish_jj_prompt for a non-empty @.
+"prompt_dirty" = "yellow"
+
+[template-aliases]
+'format_short_signature(signature)' = 'signature.name()'  # name, not email  ('""' = hide author)
+'format_timestamp(timestamp)'       = '""'                # no date/time
+'format_short_commit_id(id)'        = '""'                # no commit hash (change id stays)

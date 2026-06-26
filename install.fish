@@ -40,6 +40,16 @@ sudo keyd reload
 echo "==> Linking configs with stow..."
 stow --dir=$DOTFILES/config --target=$HOME/.config .
 
+# 6. Dev tools from mise (node, bun, portless, ...)
+echo "==> Installing mise tools..."
+mise install
+
+# 7. Portless proxy service
+# Owns :443 for *.localhost. Without it the proxy is started ad-hoc by whichever
+# repo runs `portless` first, and its version wins for every other project.
+echo "==> Installing portless service..."
+sudo (mise which portless) service install
+
 echo ""
 echo "==> All done! Restart your shell or run: exec fish"
 echo ""

@@ -6,3 +6,7 @@ bitwarden
 # cli
 sesh-bin
 tuicr-bin
+
+# tui
+lazysql
+

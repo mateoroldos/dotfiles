@@ -1,9 +1,64 @@
 onboarding = false
 
+[theme]
+name = "terminal"   # neutral base; every token below is overridden by cendre
+auto_switch = false
+
+[theme.custom]
+accent      = "#ea9875"
+panel_bg    = "#1d1917"
+surface0    = "#26211f"
+surface1    = "#312a28"
+surface_dim = "#141110"
+overlay0    = "#73665b"
+overlay1    = "#a09384"
+text        = "#e6d5c2"
+subtext0    = "#a09384"
+mauve       = "#d1766e"
+green       = "#99af6b"
+yellow      = "#fcba81"
+red         = "#d25780"
+blue        = "#4e89a2"
+teal        = "#20c9cb"
+peach       = "#ea9875"
+
 [keys]
 prefix = "ctrl+space"
 
-goto = ["alt+j"]
+goto = ["alt+g"]
+
+previous_workspace = "alt+k"
+next_workspace = "alt+j"
+
+previous_agent = "alt+shift+k"
+next_agent = "alt+shift+j"
+
+previous_tab = "alt+h"
+next_tab = "alt+l"
+
+[[keys.command]]
+key = "ctrl+h"
+type = "plugin_action"
+command = "vim-herdr-navigation.left"
+description = "navigate left (vim/herdr)"
+
+[[keys.command]]
+key = "ctrl+j"
+type = "plugin_action"
+command = "vim-herdr-navigation.down"
+description = "navigate down (vim/herdr)"
+
+[[keys.command]]
+key = "ctrl+k"
+type = "plugin_action"
+command = "vim-herdr-navigation.up"
+description = "navigate up (vim/herdr)"
+
+[[keys.command]]
+key = "ctrl+l"
+type = "plugin_action"
+command = "vim-herdr-navigation.right"
+description = "navigate right (vim/herdr)"
 
 [[keys.command]]
 key = "prefix+a"
@@ -19,6 +74,6 @@ description = "new jj workspace (in tab)"
 
 [[keys.command]]
 key = "prefix+d"
-type = "plugin_action"
-command = "nathanflurry.jj-workspace.remove"
-description = "remove jj workspace"
+type = "pane"
+command = "/home/runguinator/dotfiles/config/herdr/scripts/remove-jj-workspace"
+description = "delete jj workspace and development data"

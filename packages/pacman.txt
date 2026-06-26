@@ -9,8 +9,13 @@ fish
 neovim
 opencode
 
+# terminal
+alacritty
+
 # fonts
-ttf-zed-mono-nerd
+# Noto is the terminal face; symbols-mono supplies nerd icons as a fallback layer
+noto-fonts
+ttf-nerd-fonts-symbols-mono
 
 # keyboard
 keyd
@@ -35,3 +40,7 @@ man-db
 
 # dev env
 mise
+docker
+docker-compose
+# system node: the portless systemd service pins /usr/bin/node in its ExecStart
+nodejs

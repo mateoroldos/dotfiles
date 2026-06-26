@@ -1,8 +1,12 @@
 return {
-	"nexxeln/vesper.nvim",
+	"Aejkatappaja/cendre",
 	lazy = false,
 	priority = 1000,
 	config = function()
-		vim.cmd.colorscheme("vesper")
+		require("cendre").setup({
+			background = "soft",
+			italic_virtual_text = false,
+		})
+		vim.cmd.colorscheme("cendre")
 	end,
 }

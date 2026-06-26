@@ -1,0 +1,65 @@
+# Kanso Mist
+
+[dark]
+# preferred_background: 22262d
+fish_color_normal c5c9c7
+fish_color_command 8ba4b0
+fish_color_keyword 938aa9
+fish_color_quote 87a987
+fish_color_redirection 8ea4a2
+fish_color_end 909398
+fish_color_error e46876
+fish_color_param a4a7a4
+fish_color_comment 75797f
+fish_color_selection --background=43464e
+fish_color_operator b98d7b
+fish_color_escape 7aa89f
+fish_color_autosuggestion 5c6066
+fish_color_cwd e6c384
+fish_color_user 87a987
+fish_color_host 8ba4b0
+fish_color_host_remote e6c384
+fish_color_cancel e46876
+fish_color_search_match --background=49443c
+fish_color_valid_path --underline
+
+fish_pager_color_progress b98d7b
+fish_pager_color_prefix 7fb4ca --bold
+fish_pager_color_completion c5c9c7
+fish_pager_color_description 909398
+fish_pager_color_selected_background --background=393b44
+fish_pager_color_selected_prefix 7fb4ca --bold
+fish_pager_color_selected_completion c5c9c7
+fish_pager_color_selected_description a4a7a4
+
+[unknown]
+# preferred_background: 22262d
+fish_color_normal c5c9c7
+fish_color_command 8ba4b0
+fish_color_keyword 938aa9
+fish_color_quote 87a987
+fish_color_redirection 8ea4a2
+fish_color_end 909398
+fish_color_error e46876
+fish_color_param a4a7a4
+fish_color_comment 75797f
+fish_color_selection --background=43464e
+fish_color_operator b98d7b
+fish_color_escape 7aa89f
+fish_color_autosuggestion 5c6066
+fish_color_cwd e6c384
+fish_color_user 87a987
+fish_color_host 8ba4b0
+fish_color_host_remote e6c384
+fish_color_cancel e46876
+fish_color_search_match --background=49443c
+fish_color_valid_path --underline
+
+fish_pager_color_progress b98d7b
+fish_pager_color_prefix 7fb4ca --bold
+fish_pager_color_completion c5c9c7
+fish_pager_color_description 909398
+fish_pager_color_selected_background --background=393b44
+fish_pager_color_selected_prefix 7fb4ca --bold
+fish_pager_color_selected_completion c5c9c7
+fish_pager_color_selected_description a4a7a4

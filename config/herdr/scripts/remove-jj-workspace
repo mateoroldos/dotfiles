@@ -1,0 +1,148 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+for dependency in jj herdr python3; do
+  if ! command -v "${dependency}" >/dev/null 2>&1; then
+    echo "Required command not found: ${dependency}" >&2
+    exit 1
+  fi
+done
+
+focused_cwd="${HERDR_ACTIVE_PANE_CWD:-${PWD}}"
+if [[ ! -d "${focused_cwd}" ]]; then
+  echo "Focused pane directory does not exist: ${focused_cwd}" >&2
+  exit 1
+fi
+
+workspace_root="$(cd "${focused_cwd}" && jj root)"
+workspace_root="$(realpath "${workspace_root}")"
+workspace_name="$(basename "${workspace_root}")"
+
+if [[ ! -e "${workspace_root}/.jj" ]]; then
+  echo "Not a JJ workspace: ${workspace_root}" >&2
+  exit 1
+fi
+if [[ -d "${workspace_root}/.jj/repo" ]]; then
+  echo "Refusing to remove the main JJ workspace: ${workspace_root}" >&2
+  exit 1
+fi
+if [[ "${workspace_root}" == "/" || "$(dirname "${workspace_root}")" == "${workspace_root}" ]]; then
+  echo "Refusing to remove unsafe path: ${workspace_root}" >&2
+  exit 1
+fi
+
+printf 'This permanently deletes:\n  JJ workspace: %s\n  Development data owned by this workspace\n\n' "${workspace_root}"
+printf "Type '%s' to continue: " "${workspace_name}"
+read -r confirmation
+if [[ "${confirmation}" != "${workspace_name}" ]]; then
+  echo "Removal cancelled."
+  exit 0
+fi
+
+view_actions="$(
+  WORKSPACE_ROOT="${workspace_root}" \
+  ACTIVE_WORKSPACE_ID="${HERDR_ACTIVE_WORKSPACE_ID:-}" \
+  ACTIVE_TAB_ID="${HERDR_ACTIVE_TAB_ID:-}" \
+    python3 <<'PY'
+import json
+import os
+import subprocess
+from pathlib import Path
+
+root = Path(os.environ["WORKSPACE_ROOT"]).resolve()
+active_workspace = os.environ.get("ACTIVE_WORKSPACE_ID", "")
+active_tab = os.environ.get("ACTIVE_TAB_ID", "")
+
+
+def herdr_list(kind: str, key: str) -> list[dict[str, object]]:
+    result = subprocess.run(
+        ["herdr", kind, "list"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return json.loads(result.stdout)["result"][key]
+
+
+def belongs_to_root(raw_path: object) -> bool:
+    if not isinstance(raw_path, str) or not raw_path:
+        return False
+    path = Path(raw_path).resolve(strict=False)
+    return path == root or root in path.parents
+
+
+panes = herdr_list("pane", "panes")
+tabs = herdr_list("tab", "tabs")
+affected_tabs = {
+    pane["tab_id"]
+    for pane in panes
+    if belongs_to_root(pane.get("cwd")) or belongs_to_root(pane.get("foreground_cwd"))
+}
+
+tabs_by_workspace: dict[str, set[str]] = {}
+for tab in tabs:
+    workspace_id = tab.get("workspace_id")
+    tab_id = tab.get("tab_id")
+    if isinstance(workspace_id, str) and isinstance(tab_id, str):
+        tabs_by_workspace.setdefault(workspace_id, set()).add(tab_id)
+
+actions: list[tuple[str, str]] = []
+for workspace_id, workspace_tabs in tabs_by_workspace.items():
+    affected_in_workspace = workspace_tabs & affected_tabs
+    if not affected_in_workspace:
+        continue
+    if affected_in_workspace == workspace_tabs:
+        actions.append(("workspace", workspace_id))
+    else:
+        actions.extend(("tab", tab_id) for tab_id in sorted(affected_in_workspace))
+
+def closes_active_view(action: tuple[str, str]) -> bool:
+    kind, identifier = action
+    return (kind == "workspace" and identifier == active_workspace) or (
+        kind == "tab" and identifier == active_tab
+    )
+
+for kind, identifier in sorted(actions, key=closes_active_view):
+    print(f"{kind}\t{identifier}")
+PY
+)"
+
+cleanup_status=0
+if [[ -f "${workspace_root}/package.json" ]] && command -v bun >/dev/null 2>&1 && \
+  ROOT_PACKAGE_JSON="${workspace_root}/package.json" bun -e '
+    const manifest = await Bun.file(process.env.ROOT_PACKAGE_JSON).json()
+    process.exit(typeof manifest.scripts?.["db:destroy"] === "string" ? 0 : 1)
+  '; then
+  (cd "${workspace_root}" && bun run db:destroy) || cleanup_status=$?
+elif [[ -f "${workspace_root}/compose.yml" || -f "${workspace_root}/compose.yaml" || \
+  -f "${workspace_root}/docker-compose.yml" || -f "${workspace_root}/docker-compose.yaml" ]]; then
+  (cd "${workspace_root}" && docker compose down --volumes --remove-orphans) || cleanup_status=$?
+else
+  echo "No development cleanup command found; continuing without Compose cleanup."
+fi
+
+if (( cleanup_status != 0 )); then
+  echo "Development cleanup failed with exit code ${cleanup_status}." >&2
+  printf "Type 'DELETE ANYWAY' to remove the JJ workspace without successful cleanup: "
+  read -r fallback_confirmation
+  if [[ "${fallback_confirmation}" != "DELETE ANYWAY" ]]; then
+    echo "Removal aborted."
+    exit "${cleanup_status}"
+  fi
+fi
+
+(cd "${workspace_root}" && jj workspace forget)
+parent_directory="$(dirname "${workspace_root}")"
+(cd "${parent_directory}" && rm -rf -- "${workspace_root}")
+printf 'Removed JJ workspace: %s\n' "${workspace_root}"
+
+while IFS=$'\t' read -r action identifier; do
+  if [[ -z "${action}" || -z "${identifier}" ]]; then
+    continue
+  fi
+  case "${action}" in
+    tab) herdr tab close "${identifier}" ;;
+    workspace) herdr workspace close "${identifier}" ;;
+    *) echo "Ignoring unknown Herdr close action: ${action}" >&2 ;;
+  esac
+done <<< "${view_actions}"

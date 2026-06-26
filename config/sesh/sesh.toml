@@ -16,6 +16,11 @@ pattern = "~/Projects/**"
 startup_command = 'tmux rename-window "code" && nvim -c "lua Snacks.picker.files()"'
 windows = ["agent"]
 
+[[wildcard]]
+pattern = "~/jj-workspaces/**"
+startup_command = 'tmux rename-window "code" && nvim -c "lua Snacks.picker.files()"'
+windows = ["agent"]
+
 [[window]]
 name = "agent"
 startup_script = "opencode"

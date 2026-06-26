@@ -1,0 +1,51 @@
+# cendre · medium · https://github.com/Aejkatappaja/cendre
+
+panel_bg = "#1d1917"
+bg_highlight = "#312a28"
+fg_primary = "#e6d5c2"
+fg_secondary = "#a09384"
+fg_dim = "#73665b"
+
+diff_add = "#99af6b"
+diff_add_bg = "#262c1b"
+diff_del = "#d1766e"
+diff_del_bg = "#372321"
+diff_context = "#e6d5c2"
+diff_hunk_header = "#ea9875"
+expanded_context_fg = "#73665b"
+
+syntax_add_bg = "#262c1b"
+syntax_del_bg = "#372321"
+
+file_added = "#99af6b"
+file_modified = "#ea9875"
+file_deleted = "#d1766e"
+file_renamed = "#4e89a2"
+
+reviewed = "#99af6b"
+pending = "#ea9875"
+
+comment_note = "#73665b"
+comment_suggestion = "#ea9875"
+comment_issue = "#d1766e"
+comment_praise = "#99af6b"
+
+border_focused = "#4e89a2"
+border_unfocused = "#4e4541"
+status_bar_bg = "#312a28"
+cursor_color = "#fcba81"
+cursor_line_bg = "#26211f"
+branch_name = "#9480ba"
+help_indicator = "#a09384"
+
+message_info_fg = "#1d1917"
+message_info_bg = "#58bdff"
+message_warning_fg = "#1d1917"
+message_warning_bg = "#f4a21c"
+message_error_fg = "#1d1917"
+message_error_bg = "#d25780"
+update_badge_fg = "#1d1917"
+update_badge_bg = "#fcba81"
+
+mode_fg = "#1d1917"
+mode_bg = "#fcba81"
