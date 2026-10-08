@@ -31,7 +31,11 @@ login_shell = "/usr/bin/fish"
 root = "config"
 target = "~/.config"
 
-# Owns :443 for *.localhost. Without it the proxy is started ad-hoc by whichever
-# repo runs `portless` first, and its version wins for every other project.
 [tasks.bootstrap]
-run = "sudo $(mise which portless) service install"
+run = [
+  # Owns :443 for *.localhost. Without it the proxy is started ad-hoc by whichever
+  # repo runs `portless` first, and its version wins for every other project.
+  "sudo $(mise which portless) service install",
+  # docker without sudo. The group is root-equivalent; takes effect at next login.
+  "sudo usermod -aG docker $(id -un)",
+]
