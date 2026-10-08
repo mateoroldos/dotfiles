@@ -1,0 +1,21 @@
+[bootstrap.packages]
+"pacman:alacritty" = "latest"
+"pacman:keyd" = "latest"
+# Noto is the terminal face; symbols-mono supplies nerd icons as a fallback layer
+"pacman:noto-fonts" = "latest"
+"pacman:ttf-nerd-fonts-symbols-mono" = "latest"
+"pacman:discord" = "latest"
+"pacman:bitwarden" = "latest"
+"aur:spotify" = "latest"
+
+[bootstrap.files."/etc/keyd/default.conf"]
+source = "desktop/keyd/default.conf"
+notify = ["keyd"]
+
+[bootstrap.services.keyd]
+state = "running"
+enabled = true
+
+[dotfile_groups.desktop]
+root = "desktop/config"
+target = "~/.config"

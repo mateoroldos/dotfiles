@@ -1,4 +1,4 @@
-source /usr/share/cachyos-fish-config/cachyos-config.fish
+test -f /usr/share/cachyos-fish-config/cachyos-config.fish; and source /usr/share/cachyos-fish-config/cachyos-config.fish
 
 # overwrite greeting
 function fish_greeting
@@ -8,6 +8,6 @@ end
 mise activate fish | source
 zoxide init fish | source
 
-fish_config theme choose cendre --color-theme=dark
+fish_config theme choose cendre
 
 set -gx EDITOR nvim

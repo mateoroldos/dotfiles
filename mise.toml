@@ -1,0 +1,39 @@
+[settings]
+dotfiles.root = "~/dotfiles"
+
+# Each entry applies only where its manager exists: pacman on Arch, apt on Debian.
+[bootstrap.packages]
+"pacman:git" = "latest"
+"pacman:fish" = "latest"
+"pacman:tmux" = "latest"
+"pacman:curl" = "latest"
+"pacman:man-db" = "latest"
+"pacman:docker" = "latest"
+"pacman:docker-compose" = "latest"
+# system node: the portless service pins /usr/bin/node in its ExecStart
+"pacman:nodejs" = "latest"
+
+"apt:git" = "latest"
+"apt:fish" = "latest"
+"apt:tmux" = "latest"
+"apt:curl" = "latest"
+"apt:man-db" = "latest"
+"apt:docker.io" = "latest"
+"apt:docker-compose" = "latest"
+"apt:nodejs" = "latest"
+
+[bootstrap.services.docker]
+state = "running"
+enabled = true
+
+[bootstrap.user]
+login_shell = "/usr/bin/fish"
+
+[dotfile_groups.config]
+root = "config"
+target = "~/.config"
+
+# Owns :443 for *.localhost. Without it the proxy is started ad-hoc by whichever
+# repo runs `portless` first, and its version wins for every other project.
+[tasks.bootstrap]
+run = "sudo $(mise which portless) service install"
