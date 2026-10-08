@@ -42,6 +42,130 @@ local function open_tuicr_for_revset(path)
   exec_shell(command)
 end
 
+-- gh runs through `jj util exec` so jjui can run it in the background.
+local function gh(...)
+  jj_async("util", "exec", "--", "gh", ...)
+end
+
+-- Bookmarks on this revision or stacked above it, nearest first.
+local function stack_bookmarks(change_id)
+  local out = jj("log", "-r", "(" .. change_id .. ":: & bookmarks()) ~ ::trunk()",
+    "--no-graph", "--reversed",
+    "-T", 'local_bookmarks.map(|b| b.name() ++ "\\n").join("")')
+  return split_lines(out or "")
+end
+
+-- The given bookmarks that exist on a remote, as a set.
+local function pushed_bookmarks(bookmarks)
+  local pushed = {}
+  if #bookmarks == 0 then
+    return pushed
+  end
+
+  local args = { "bookmark", "list", "--all-remotes", "-T", 'if(remote, remote ++ " " ++ name ++ "\\n")' }
+  for _, bookmark in ipairs(bookmarks) do
+    table.insert(args, "exact:" .. bookmark)
+  end
+
+  local out = jj(args)
+  for _, line in ipairs(split_lines(out or "")) do
+    local remote, name = line:match("^(%S+) (%S+)$")
+    if remote and remote ~= "git" then
+      pushed[name] = true
+    end
+  end
+
+  return pushed
+end
+
+-- Open PRs keyed by head branch.
+local function open_prs()
+  local out = jj("util", "exec", "--", "gh", "pr", "list", "--state", "open", "-L", "200",
+    "--json", "headRefName,number,url", "-q", '.[] | "\\(.headRefName) \\(.number) \\(.url)"')
+
+  local prs = {}
+  for _, line in ipairs(split_lines(out or "")) do
+    local branch, number, url = line:match("^(%S+) (%S+) (%S+)$")
+    if branch then
+      prs[branch] = { number = number, url = url }
+    end
+  end
+
+  return prs
+end
+
+-- The revision's full commit ID if a remote bookmark contains it.
+local function pushed_commit(change_id)
+  local out = jj("log", "-r", change_id .. " & ::remote_bookmarks()", "--no-graph", "-T", "commit_id")
+  if not out or out == "" then
+    return nil
+  end
+
+  return out
+end
+
+local function github_items(change_id)
+  local items = {}
+  local bookmarks = stack_bookmarks(change_id)
+  local pushed = pushed_bookmarks(bookmarks)
+  local prs = next(pushed) and open_prs() or {}
+
+  for _, bookmark in ipairs(bookmarks) do
+    local pr = prs[bookmark]
+    if pr then
+      table.insert(items, {
+        label = "Open PR #" .. pr.number .. " · " .. bookmark,
+        run = function()
+          gh("pr", "view", pr.number, "--web")
+        end,
+      })
+      table.insert(items, {
+        label = "Copy PR URL · " .. bookmark,
+        run = function()
+          copy_to_clipboard(pr.url)
+          flash("Copied: " .. pr.url)
+        end,
+      })
+    else
+      table.insert(items, {
+        label = "Create PR · " .. bookmark,
+        run = function()
+          jj_async("git", "push", "-b", bookmark)
+          gh("pr", "create", "--web", "--head", bookmark)
+        end,
+      })
+    end
+
+    if pushed[bookmark] then
+      table.insert(items, {
+        label = "Browse branch · " .. bookmark,
+        run = function()
+          gh("browse", "-b", bookmark)
+        end,
+      })
+    end
+  end
+
+  local commit_id = pushed_commit(change_id)
+  if commit_id then
+    table.insert(items, {
+      label = "Browse commit · " .. commit_id:sub(1, 8),
+      run = function()
+        gh("browse", commit_id)
+      end,
+    })
+  end
+
+  table.insert(items, {
+    label = "Open repo",
+    run = function()
+      gh("browse")
+    end,
+  })
+
+  return items
+end
+
 function setup(config)
   config.action("tuicr.open-revisions", function()
     open_tuicr_for_revset(nil)
@@ -73,40 +197,30 @@ function setup(config)
     desc = "tuicr working copy",
   })
 
-  config.action("gh.pr", function()
+  config.action("gh.menu", function()
     local change_id = context.change_id()
     if not change_id or change_id == "" then
       flash({ text = "No revision selected", error = true })
       return
     end
 
-    local out, err = jj("log", "-r", change_id, "--no-graph",
-      "-T", 'local_bookmarks.map(|b| b.name()).join("\\n")')
-    if err then
-      flash({ text = err, error = true })
-      return
+    local items = github_items(change_id)
+
+    -- choose() sizes the popup to its longest label, so pad them.
+    local labels = {}
+    for index, item in ipairs(items) do
+      labels[index] = string.format("%-48s", item.label)
     end
 
-    local bookmarks = split_lines(out)
-    if #bookmarks == 0 then
-      flash({ text = "No bookmark on this revision (b to create one)", error = true })
-      return
-    end
-
-    local bookmark = bookmarks[1]
-    if #bookmarks > 1 then
-      bookmark = choose({ title = "Open PR for", options = bookmarks })
-      if not bookmark then
-        return
+    local choice = choose({ title = "GitHub", options = labels })
+    for index, label in ipairs(labels) do
+      if label == choice then
+        items[index].run()
       end
     end
-
-    local quoted = shell_quote(bookmark)
-    exec_shell("jj git push -b " .. quoted
-      .. "; and begin; gh pr view " .. quoted .. " --web; or gh pr create --web --head " .. quoted .. "; end")
   end, {
-    key = "alt+p",
+    key = "shift+h",
     scope = "revisions",
-    desc = "open/create PR",
+    desc = "github",
   })
 end

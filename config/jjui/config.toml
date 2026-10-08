@@ -1,1 +1,2 @@
-
+[ui.colors]
+"choose title" = { fg = "230", bg = "62", bold = true }
