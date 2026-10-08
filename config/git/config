@@ -1,0 +1,18 @@
+[user]
+	name = Mateo Roldos
+	email = mateoroldos19@gmail.com
+
+[delta]
+    features = melange
+
+[delta "melange"]
+    syntax-theme = base16
+    file-style = "#E49B5D bold"
+    file-decoration-style = "#E49B5D ul"
+    hunk-header-style = "#E49B5D bold"
+    hunk-header-decoration-style = "#544F4A"
+    line-numbers-zero-style = "#544F4A"
+    line-numbers-minus-style = "#BD8183"
+    line-numbers-plus-style = "#78997A"
+    minus-style = "#BD8183"
+    plus-style = "#78997A"

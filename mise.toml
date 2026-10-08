@@ -39,3 +39,6 @@ run = [
   # docker without sudo. The group is root-equivalent; takes effect at next login.
   "sudo usermod -aG docker $(id -un)",
 ]
+
+[dotfiles]
+"~/.ssh/config" = { source = "ssh/config" }
