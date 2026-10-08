@@ -5,6 +5,8 @@ function fish_greeting
     # smth smth
 end
 
+# mise.run installs mise here; fish does not read ~/.profile, which adds it for bash
+fish_add_path --path ~/.local/bin
 mise activate fish | source
 zoxide init fish | source
 
