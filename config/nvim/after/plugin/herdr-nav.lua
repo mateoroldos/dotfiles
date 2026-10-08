@@ -1,6 +1,5 @@
 -- vim-herdr-navigation: seamless C-h/j/k/l across nvim splits and herdr panes.
 -- Loaded via after/plugin so it runs after all plugins and its mappings always win.
--- Falls back to tmux select-pane when not inside herdr.
 
 local function nav(wincmd, dir)
 	local prev = vim.api.nvim_get_current_win()
@@ -11,9 +10,6 @@ local function nav(wincmd, dir)
 	if vim.env.HERDR_PANE_ID and vim.env.HERDR_PANE_ID ~= "" then
 		local herdr = vim.env.HERDR_BIN_PATH or "herdr"
 		vim.fn.system({ herdr, "pane", "focus", "--direction", dir, "--current" })
-	elseif vim.env.TMUX and vim.env.TMUX ~= "" then
-		local flag = { left = "-L", down = "-D", up = "-U", right = "-R" }
-		vim.fn.system({ "tmux", "select-pane", flag[dir] })
 	end
 end
 

@@ -2,7 +2,7 @@
 
 Personal dotfiles for an Arch desktop and a Debian 13 devbox. `mise bootstrap` installs system packages, links configs into `~/.config`, and installs dev tools.
 
-Configured tools include Fish, Neovim/LazyVim, tmux, mise, sesh, tuicr, herdr, yazi, and Jujutsu.
+Configured tools include Fish, Neovim/LazyVim, mise, tuicr, herdr, yazi, and Jujutsu.
 
 ## Layout
 
