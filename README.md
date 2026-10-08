@@ -19,7 +19,7 @@ Dev tools live in `config/mise/config.toml`, mise's global config. Add one with 
 
 The repo must live at `~/dotfiles`; `mise.toml` sets it as `dotfiles.root`.
 
-Install mise and the AUR helper first: on Arch, `pacman -S mise yay`. On Debian, `curl https://mise.run | sh`; this also needs `sudo` and `curl`.
+Install mise first with `curl https://mise.run | sh`; this needs `sudo` and `curl`. Distro packages lag the `dotfile_groups` support `mise.toml` needs. On Arch, also install `yay` for AUR packages.
 
 ```sh
 git clone <repo-url> ~/dotfiles
