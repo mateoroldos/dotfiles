@@ -2,8 +2,6 @@
 node = "lts"
 bun = "latest"
 usage = "latest"
-python = "3.12"
-uv = "latest"
 "npm:portless" = "latest"
 
 # cli
