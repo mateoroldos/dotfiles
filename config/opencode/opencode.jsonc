@@ -1,12 +1,8 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "permissions": [
-    {
-      "action": "websearch",
-      "resource": "*",
-      "effect": "allow"
-    }
-  ],
+  "permission": {
+    "websearch": "allow"
+  },
   "websearch": {
     "provider": "exa"
   },
