@@ -1,6 +1,7 @@
 [tools]
 node = "lts"
 bun = "latest"
+rust = "latest"
 usage = "latest"
 "npm:portless" = "latest"
 
@@ -24,3 +25,4 @@ herdr = "latest"
 pi = "latest"
 "github:jorgerojas26/lazysql" = "latest"
 "github:agavra/tuicr" = "latest"
+uv = "latest"
