@@ -77,3 +77,11 @@ key = "prefix+d"
 type = "pane"
 command = "/home/runguinator/dotfiles/config/herdr/scripts/remove-jj-workspace"
 description = "delete jj workspace and development data"
+
+[[keys.command]]
+key = "prefix+alt+g"
+type = "popup"
+command = "jjui"
+description = "run jjui"
+width = "90%"
+height = "90%"
