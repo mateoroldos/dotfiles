@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Opens a tool pane from this plugin in the focused pane's folder: split to
+# its right, or in a new tab of the same workspace named after the tool.
+set -euo pipefail
+
+tool="$1"
+cwd="$(jq -r .focused_pane_cwd <<<"${HERDR_PLUGIN_CONTEXT_JSON}")"
+
+case "${2:-}" in
+  split) target=(--target-pane "${HERDR_PANE_ID}" --direction right) ;;
+  tab) target=(--workspace "${HERDR_WORKSPACE_ID}") ;;
+  *)
+    echo "usage: open <tool> split|tab" >&2
+    exit 2
+    ;;
+esac
+
+tab="$("${HERDR_BIN_PATH}" plugin pane open --plugin "${HERDR_PLUGIN_ID}" --entrypoint "${tool}" \
+  --placement "$2" "${target[@]}" --cwd "${cwd}" --focus | jq -r .result.plugin_pane.pane.tab_id)"
+
+# A tab placement neither names nor shows the new tab.
+if [[ "$2" == tab ]]; then
+  "${HERDR_BIN_PATH}" tab rename "${tab}" "${tool}" >/dev/null
+  "${HERDR_BIN_PATH}" tab focus "${tab}" >/dev/null
+fi

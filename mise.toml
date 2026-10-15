@@ -38,6 +38,8 @@ run = [
   "sudo $(mise which portless) service install",
   # docker without sudo. The group is root-equivalent; takes effect at next login.
   "sudo usermod -aG docker $(id -un)",
+  # herdr keeps its own plugin registry; prefix+u, prefix+i and prefix+y open jjui, neovim and yazi through it.
+  "herdr plugin link ~/dotfiles/config/herdr/tools-plugin",
 ]
 
 [dotfiles]

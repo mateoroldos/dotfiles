@@ -1,0 +1,57 @@
+id = "dotfiles.tools"
+name = "tools"
+version = "0.1.0"
+min_herdr_version = "0.9.3"
+description = "Open terminal tools in a split pane or a new tab."
+platforms = ["linux", "macos"]
+
+[[panes]]
+id = "jjui"
+title = "jjui"
+command = ["jjui"]
+
+[[actions]]
+id = "jjui-split"
+title = "jjui in a split pane"
+contexts = ["workspace"]
+command = ["./open", "jjui", "split"]
+
+[[actions]]
+id = "jjui-tab"
+title = "jjui in a new tab"
+contexts = ["workspace"]
+command = ["./open", "jjui", "tab"]
+
+[[panes]]
+id = "nvim"
+title = "nvim"
+command = ["nvim"]
+
+[[actions]]
+id = "nvim-split"
+title = "neovim in a split pane"
+contexts = ["workspace"]
+command = ["./open", "nvim", "split"]
+
+[[actions]]
+id = "nvim-tab"
+title = "neovim in a new tab"
+contexts = ["workspace"]
+command = ["./open", "nvim", "tab"]
+
+[[panes]]
+id = "yazi"
+title = "yazi"
+command = ["yazi"]
+
+[[actions]]
+id = "yazi-split"
+title = "yazi in a split pane"
+contexts = ["workspace"]
+command = ["./open", "yazi", "split"]
+
+[[actions]]
+id = "yazi-tab"
+title = "yazi in a new tab"
+contexts = ["workspace"]
+command = ["./open", "yazi", "tab"]

@@ -93,6 +93,42 @@ width = "60%"
 height = "50%"
 
 [[keys.command]]
+key = "prefix+u"
+type = "plugin_action"
+command = "dotfiles.tools.jjui-split"
+description = "jjui in a split pane"
+
+[[keys.command]]
+key = "prefix+shift+u"
+type = "plugin_action"
+command = "dotfiles.tools.jjui-tab"
+description = "jjui in a new tab"
+
+[[keys.command]]
+key = "prefix+i"
+type = "plugin_action"
+command = "dotfiles.tools.nvim-split"
+description = "neovim in a split pane"
+
+[[keys.command]]
+key = "prefix+shift+i"
+type = "plugin_action"
+command = "dotfiles.tools.nvim-tab"
+description = "neovim in a new tab"
+
+[[keys.command]]
+key = "prefix+y"
+type = "plugin_action"
+command = "dotfiles.tools.yazi-split"
+description = "yazi in a split pane"
+
+[[keys.command]]
+key = "prefix+shift+y"
+type = "plugin_action"
+command = "dotfiles.tools.yazi-tab"
+description = "yazi in a new tab"
+
+[[keys.command]]
 key = "prefix+alt+g"
 type = "popup"
 command = "jjui"
