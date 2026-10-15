@@ -77,6 +77,14 @@ width = "60%"
 height = "20%"
 
 [[keys.command]]
+key = "prefix+w"
+type = "popup"
+command = "/home/runguinator/dotfiles/config/herdr/scripts/jj-ws switch"
+description = "switch jj workspace"
+width = "60%"
+height = "50%"
+
+[[keys.command]]
 key = "prefix+d"
 type = "pane"
 command = "/home/runguinator/dotfiles/config/herdr/scripts/remove-jj-workspace"

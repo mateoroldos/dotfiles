@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Create jj workspaces from herdr. Runs in a herdr popup, so it reads the
+# Create and switch jj workspaces from herdr. Runs in a herdr popup, so it reads the
 # focused pane from HERDR_ACTIVE_* and never types commands into your shell.
 set -euo pipefail
 
 workspaces_root="${JJ_WORKSPACE_ROOT:-${HOME}/.herdr/workspaces}"
 
 usage() {
-  echo "usage: jj-ws new tab|workspace" >&2
+  echo "usage: jj-ws new tab|workspace | jj-ws switch" >&2
   exit 2
 }
 
@@ -45,17 +45,41 @@ random_name() {
 }
 
 open_view() {
-  local mode="$1" label="$2" cwd="$3"
+  local mode="$1" repo="$2" name="$3" cwd="$4"
 
   case "${mode}" in
     tab)
       herdr tab create --workspace "${HERDR_ACTIVE_WORKSPACE_ID:?run jj-ws from herdr}" \
-        --cwd "${cwd}" --label "${label}" --focus >/dev/null
+        --cwd "${cwd}" --label "${name}" --focus >/dev/null
       ;;
     workspace)
-      herdr workspace create --cwd "${cwd}" --label "${label}" --focus >/dev/null
+      herdr workspace create --cwd "${cwd}" --label "${repo}/${name}" --focus >/dev/null
       ;;
   esac
+}
+
+# Prints the tab of the first herdr pane working inside root, if any.
+open_tab_of() {
+  local root="$1"
+
+  herdr pane list | jq -r --arg root "${root}" '
+    .result.panes[]
+    | select([.cwd, .foreground_cwd] | any((. // "") as $cwd
+        | $cwd == $root or ($cwd | startswith($root + "/"))))
+    | .tab_id' | head -n 1
+}
+
+# Prints "name<TAB>root" for every workspace of the repo with a checkout on disk.
+list_workspaces() {
+  local source_root="$1"
+  local name root
+
+  (cd "${source_root}" && jj workspace list -T 'name ++ "\t" ++ root ++ "\n"') |
+    while IFS=$'\t' read -r name root; do
+      if [[ -d "${root}" ]]; then
+        printf '%s\t%s\n' "${name}" "${root}"
+      fi
+    done
 }
 
 cmd_new() {
@@ -83,10 +107,28 @@ cmd_new() {
     jj workspace add --name "${name}" -r @ --sparse-patterns full "${destination}") ||
     die "Could not create the jj workspace."
 
-  if [[ "${mode}" == tab ]]; then
-    open_view tab "${name}" "${destination}"
+  open_view "${mode}" "${repo}" "${name}" "${destination}"
+}
+
+cmd_switch() {
+  local source_root repo choice key name root tab
+
+  source_root="$(focused_root)"
+  repo="$(basename "$(main_root "${source_root}")")"
+
+  choice="$(list_workspaces "${source_root}" |
+    fzf --delimiter='\t' --with-nth=1 --expect=ctrl-o \
+      --prompt="${repo}> " --header='enter: tab  ctrl-o: herdr workspace')" || exit 0
+  key="$(sed -n 1p <<<"${choice}")"
+  IFS=$'\t' read -r name root <<<"$(sed -n 2p <<<"${choice}")"
+
+  tab="$(open_tab_of "${root}")"
+  if [[ -n "${tab}" ]]; then
+    herdr tab focus "${tab}" >/dev/null
+  elif [[ "${key}" == ctrl-o ]]; then
+    open_view workspace "${repo}" "${name}" "${root}"
   else
-    open_view workspace "${repo}/${name}" "${destination}"
+    open_view tab "${repo}" "${name}" "${root}"
   fi
 }
 
@@ -94,6 +136,10 @@ case "${1:-}" in
   new)
     [[ $# -eq 2 ]] || usage
     cmd_new "$2"
+    ;;
+  switch)
+    [[ $# -eq 1 ]] || usage
+    cmd_switch
     ;;
   *) usage ;;
 esac
