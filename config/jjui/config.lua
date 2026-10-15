@@ -42,9 +42,16 @@ local function open_tuicr_for_revset(path)
   exec_shell(command)
 end
 
+-- gh finds the repo through git, but only the default jj workspace has a .git
+-- directory, so point git at the repo's store from any workspace.
+local function gh_args(...)
+  local git_dir = (jj("git", "root") or ""):gsub("%s+$", "")
+  return "util", "exec", "--", "env", "GIT_DIR=" .. git_dir, "gh", ...
+end
+
 -- gh runs through `jj util exec` so jjui can run it in the background.
 local function gh(...)
-  jj_async("util", "exec", "--", "gh", ...)
+  jj_async(gh_args(...))
 end
 
 -- Bookmarks on this revision or stacked above it, nearest first.
@@ -80,8 +87,8 @@ end
 
 -- Open PRs keyed by head branch.
 local function open_prs()
-  local out = jj("util", "exec", "--", "gh", "pr", "list", "--state", "open", "-L", "200",
-    "--json", "headRefName,number,url", "-q", '.[] | "\\(.headRefName) \\(.number) \\(.url)"')
+  local out = jj(gh_args("pr", "list", "--state", "open", "-L", "200",
+    "--json", "headRefName,number,url", "-q", '.[] | "\\(.headRefName) \\(.number) \\(.url)"'))
 
   local prs = {}
   for _, line in ipairs(split_lines(out or "")) do
