@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Create and switch jj workspaces from herdr. Runs in a herdr popup, so it reads the
+# Create, switch, and remove jj workspaces from herdr. Runs in a herdr popup, so it reads the
 # focused pane from HERDR_ACTIVE_* and never types commands into your shell.
 set -euo pipefail
 
 workspaces_root="${JJ_WORKSPACE_ROOT:-${HOME}/.herdr/workspaces}"
 
 usage() {
-  echo "usage: jj-ws new tab|workspace | jj-ws switch" >&2
+  echo "usage: jj-ws new tab|workspace | jj-ws switch | jj-ws rm [dir]" >&2
   exit 2
 }
 
@@ -82,6 +82,27 @@ list_workspaces() {
     done
 }
 
+# Prints "tab <id>" or "workspace <id>" for each herdr view working inside
+# root: the whole workspace when all its tabs are inside, else each tab. The
+# view behind the popup comes last, so closing it can't cut the loop short.
+views_inside() {
+  local root="$1"
+
+  { herdr tab list; herdr pane list; } | jq -rs --arg root "${root}" \
+    --arg active_workspace "${HERDR_ACTIVE_WORKSPACE_ID:-}" \
+    --arg active_tab "${HERDR_ACTIVE_TAB_ID:-}" '
+    def inside: (. // "") as $cwd | $cwd == $root or ($cwd | startswith($root + "/"));
+    (.[1].result.panes | map(select([.cwd, .foreground_cwd] | any(inside)) | .tab_id)) as $hit
+    | .[0].result.tabs
+    | group_by(.workspace_id)
+    | map(map(.tab_id) as $tabs
+        | if ($tabs - $hit) == [] then [{kind: "workspace", id: .[0].workspace_id}]
+          else [$tabs[] | select(IN($hit[])) | {kind: "tab", id: .}] end)
+    | add // []
+    | sort_by(.id == $active_workspace or .id == $active_tab)
+    | .[] | "\(.kind) \(.id)"'
+}
+
 cmd_new() {
   local mode="$1"
   local source_root repo suggested name destination
@@ -117,10 +138,15 @@ cmd_switch() {
   repo="$(basename "$(main_root "${source_root}")")"
 
   choice="$(list_workspaces "${source_root}" |
-    fzf --delimiter='\t' --with-nth=1 --expect=ctrl-o \
-      --prompt="${repo}> " --header='enter: tab  ctrl-o: herdr workspace')" || exit 0
+    fzf --delimiter='\t' --with-nth=1 --expect=ctrl-o,ctrl-d \
+      --prompt="${repo}> " --header='enter: tab  ctrl-o: herdr workspace  ctrl-d: delete')" || exit 0
   key="$(sed -n 1p <<<"${choice}")"
   IFS=$'\t' read -r name root <<<"$(sed -n 2p <<<"${choice}")"
+
+  if [[ "${key}" == ctrl-d ]]; then
+    cmd_rm "${root}"
+    return
+  fi
 
   tab="$(open_tab_of "${root}")"
   if [[ -n "${tab}" ]]; then
@@ -132,6 +158,64 @@ cmd_switch() {
   fi
 }
 
+cmd_rm() {
+  local dir="${1:-${HERDR_ACTIVE_PANE_CWD:-${PWD}}}"
+  local root name work views answer kind id
+  local cleanup_status=0
+
+  root="$(cd "${dir}" && jj root 2>/dev/null)" || die "Not in a jj workspace: ${dir}"
+  root="$(realpath "${root}")"
+  name="$(basename "${root}")"
+  [[ ! -d "${root}/.jj/repo" ]] || die "Refusing to remove the main jj workspace: ${root}"
+  [[ "${root}" != / && "${root}" != "${HOME}" ]] || die "Refusing to remove unsafe path: ${root}"
+
+  # Work only this workspace holds: changes past trunk that no other
+  # workspace's working copy builds on, with a diff.
+  work="$(cd "${root}" && jj log --no-graph \
+    -r '(trunk()..@ ~ ::(working_copies() ~ @)) ~ empty()' \
+    -T 'change_id.short() ++ " " ++ description.first_line() ++ "\n"')" ||
+    die "Could not read ${name}. If it is stale, run 'jj workspace update-stale' there first."
+  if [[ -n "${work}" ]]; then
+    printf 'This workspace has changes not on trunk:\n%s\n\n' "${work}"
+    read -r -p "Type '${name}' to delete ${root}: " answer
+    [[ "${answer}" == "${name}" ]] || die "Removal cancelled."
+  else
+    read -r -p "Delete ${root}? [y/N] " answer
+    [[ "${answer}" =~ ^[Yy]$ ]] || exit 0
+  fi
+
+  views="$(views_inside "${root}")"
+
+  if [[ -f "${root}/package.json" ]] && command -v bun >/dev/null 2>&1 &&
+    ROOT_PACKAGE_JSON="${root}/package.json" bun -e '
+      const manifest = await Bun.file(process.env.ROOT_PACKAGE_JSON).json()
+      process.exit(typeof manifest.scripts?.["db:destroy"] === "string" ? 0 : 1)
+    '; then
+    (cd "${root}" && bun run db:destroy) || cleanup_status=$?
+  elif [[ -f "${root}/compose.yml" || -f "${root}/compose.yaml" ||
+    -f "${root}/docker-compose.yml" || -f "${root}/docker-compose.yaml" ]]; then
+    (cd "${root}" && docker compose down --volumes --remove-orphans) || cleanup_status=$?
+  else
+    echo "No development cleanup command found; continuing without Compose cleanup."
+  fi
+
+  if ((cleanup_status != 0)); then
+    echo "Development cleanup failed with exit code ${cleanup_status}." >&2
+    read -r -p "Type 'DELETE ANYWAY' to remove the jj workspace without successful cleanup: " answer
+    [[ "${answer}" == "DELETE ANYWAY" ]] || die "Removal aborted."
+  fi
+
+  (cd "${root}" && jj workspace forget)
+  rm -rf -- "${root}"
+  echo "Removed jj workspace: ${root}"
+
+  while read -r kind id; do
+    if [[ -n "${kind}" ]]; then
+      herdr "${kind}" close "${id}" >/dev/null
+    fi
+  done <<<"${views}"
+}
+
 case "${1:-}" in
   new)
     [[ $# -eq 2 ]] || usage
@@ -140,6 +224,10 @@ case "${1:-}" in
   switch)
     [[ $# -eq 1 ]] || usage
     cmd_switch
+    ;;
+  rm)
+    [[ $# -le 2 ]] || usage
+    cmd_rm "${2:-}"
     ;;
   *) usage ;;
 esac

@@ -86,9 +86,11 @@ height = "50%"
 
 [[keys.command]]
 key = "prefix+d"
-type = "pane"
-command = "/home/runguinator/dotfiles/config/herdr/scripts/remove-jj-workspace"
+type = "popup"
+command = "/home/runguinator/dotfiles/config/herdr/scripts/jj-ws rm"
 description = "delete jj workspace and development data"
+width = "60%"
+height = "50%"
 
 [[keys.command]]
 key = "prefix+alt+g"
