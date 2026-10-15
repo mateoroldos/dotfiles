@@ -62,15 +62,19 @@ description = "navigate right (vim/herdr)"
 
 [[keys.command]]
 key = "prefix+a"
-type = "plugin_action"
-command = "nathanflurry.jj-workspace.new"
-description = "new jj workspace"
+type = "popup"
+command = "/home/runguinator/dotfiles/config/herdr/scripts/jj-ws new tab"
+description = "new jj workspace (tab)"
+width = "60%"
+height = "20%"
 
 [[keys.command]]
 key = "prefix+shift+a"
-type = "plugin_action"
-command = "nathanflurry.jj-workspace.new-tab"
-description = "new jj workspace (in tab)"
+type = "popup"
+command = "/home/runguinator/dotfiles/config/herdr/scripts/jj-ws new workspace"
+description = "new jj workspace (herdr workspace)"
+width = "60%"
+height = "20%"
 
 [[keys.command]]
 key = "prefix+d"

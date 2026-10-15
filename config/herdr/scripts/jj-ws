@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+# Create jj workspaces from herdr. Runs in a herdr popup, so it reads the
+# focused pane from HERDR_ACTIVE_* and never types commands into your shell.
+set -euo pipefail
+
+workspaces_root="${JJ_WORKSPACE_ROOT:-${HOME}/.herdr/workspaces}"
+
+usage() {
+  echo "usage: jj-ws new tab|workspace" >&2
+  exit 2
+}
+
+# The popup closes when the script exits, so hold errors on screen.
+die() {
+  echo "$*" >&2
+  read -r -p "Press enter to close." _ || true
+  exit 1
+}
+
+focused_root() {
+  local cwd="${HERDR_ACTIVE_PANE_CWD:-${PWD}}"
+
+  (cd "${cwd}" && jj root 2>/dev/null) || die "Not in a jj repo: ${cwd}"
+}
+
+# The main workspace keeps the store in .jj/repo; other workspaces keep a
+# file there with the store's path, relative to their .jj directory.
+main_root() {
+  local root="$1"
+  local store="${root}/.jj/repo"
+
+  if [[ ! -d "${store}" ]]; then
+    store="$(cat "${store}")"
+    [[ "${store}" == /* ]] || store="${root}/.jj/${store}"
+  fi
+
+  realpath "${store}/../.."
+}
+
+random_name() {
+  local adjectives=(brave calm clear green lucky quiet rapid silver)
+  local nouns=(river cloud field forest harbor meadow stone valley)
+
+  echo "${adjectives[RANDOM % ${#adjectives[@]}]}-${nouns[RANDOM % ${#nouns[@]}]}"
+}
+
+open_view() {
+  local mode="$1" label="$2" cwd="$3"
+
+  case "${mode}" in
+    tab)
+      herdr tab create --workspace "${HERDR_ACTIVE_WORKSPACE_ID:?run jj-ws from herdr}" \
+        --cwd "${cwd}" --label "${label}" --focus >/dev/null
+      ;;
+    workspace)
+      herdr workspace create --cwd "${cwd}" --label "${label}" --focus >/dev/null
+      ;;
+  esac
+}
+
+cmd_new() {
+  local mode="$1"
+  local source_root repo suggested name destination
+
+  [[ "${mode}" == tab || "${mode}" == workspace ]] || usage
+
+  source_root="$(focused_root)"
+  repo="$(basename "$(main_root "${source_root}")")"
+
+  suggested="$(random_name)"
+  while [[ -e "${workspaces_root}/${repo}/${suggested}" ]]; do
+    suggested="$(random_name)"
+  done
+  read -r -e -i "${suggested}" -p "New workspace in ${repo}: " name
+  name="${name:-${suggested}}"
+  [[ "${name}" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]] ||
+    die "Use letters, digits, '.', '_' or '-': ${name}"
+  destination="${workspaces_root}/${repo}/${name}"
+  [[ ! -e "${destination}" ]] || die "Already exists: ${destination}"
+
+  mkdir -p "$(dirname "${destination}")"
+  (cd "${source_root}" &&
+    jj workspace add --name "${name}" -r @ --sparse-patterns full "${destination}") ||
+    die "Could not create the jj workspace."
+
+  if [[ "${mode}" == tab ]]; then
+    open_view tab "${name}" "${destination}"
+  else
+    open_view workspace "${repo}/${name}" "${destination}"
+  fi
+}
+
+case "${1:-}" in
+  new)
+    [[ $# -eq 2 ]] || usage
+    cmd_new "$2"
+    ;;
+  *) usage ;;
+esac
