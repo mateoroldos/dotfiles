@@ -6,6 +6,8 @@
 "pacman:ttf-nerd-fonts-symbols-mono" = "latest"
 "pacman:discord" = "latest"
 "pacman:bitwarden" = "latest"
+"pacman:vlc" = "latest"
+"pacman:vlc-plugins-extra" = "latest"
 "aur:spotify" = "latest"
 
 [bootstrap.files."/etc/keyd/default.conf"]
