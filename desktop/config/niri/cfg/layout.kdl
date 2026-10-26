@@ -1,0 +1,26 @@
+    layout {
+        gaps 8 // Gap between windows
+        center-focused-column "always" // Don’t auto-center focused column
+
+        background-color "transparent" // Show Noctalia's stationary wallpaper
+
+        focus-ring {
+            off
+        }
+
+        border {
+            on
+            width 1
+            active-color "#ea9875"
+            inactive-color "#73665b"
+            urgent-color "#d25780"
+        }
+
+        preset-column-widths {
+            proportion 0.33333
+            proportion 0.5
+            proportion 0.66667
+        }
+
+        struts {}
+    }

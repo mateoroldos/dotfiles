@@ -143,6 +143,6 @@ enabled = true
 unit = "celsius"
 
 [backdrop]
-enabled = true
+enabled = false
 blur_intensity = 0.4
 tint_intensity = 0.6

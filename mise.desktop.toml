@@ -1,5 +1,6 @@
 [bootstrap.packages]
 "pacman:alacritty" = "latest"
+"pacman:noctalia" = "latest"
 "pacman:keyd" = "latest"
 # Noto is the terminal face; symbols-mono supplies nerd icons as a fallback layer
 "pacman:noto-fonts" = "latest"
