@@ -40,6 +40,7 @@ run = [
   "sudo usermod -aG docker $(id -un)",
   # herdr keeps its own plugin registry; prefix+u, prefix+i and prefix+y open jjui, neovim and yazi through it.
   "herdr plugin link ~/dotfiles/config/herdr/tools-plugin",
+  "herdr plugin install plannotator/herdr-annotate --yes",
 ]
 
 [dotfiles]
