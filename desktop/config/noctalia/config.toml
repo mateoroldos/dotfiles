@@ -1,0 +1,148 @@
+[theme]
+mode = "dark"
+source = "custom"
+custom_palette = "Cendre"
+
+[shell]
+font_family = "Adwaita Sans"
+avatar_path = "~/.face"
+telemetry_enabled = false
+clipboard_auto_paste = "off"
+
+[shell.panel]
+transparency_mode = "soft"
+borders = false
+shadow = false
+launcher_placement = "attached"
+clipboard_placement = "attached"
+open_near_click_control_center = true
+
+[shell.launcher]
+layout = "simple"
+app_grid = false
+sort_by_usage = true
+auto_paste = "off"
+
+[wallpaper]
+directory = "~/Pictures/Wallpapers"
+fill_mode = "crop"
+fill_color = "#000000"
+transition = ["fade", "disc", "stripes", "wipe", "honeycomb"]
+transition_duration = 1500
+edge_smoothness = 0.05
+
+[wallpaper.default]
+path = "~/Pictures/Wallpapers/the_earth_in_space.jpeg"
+
+[bar.default]
+position = "top"
+background_opacity = 0.93
+margin_ends = 4
+margin_edge = 4
+padding = 6
+widget_spacing = 6
+radius = 12
+shadow = false
+capsule = true
+capsule_fill = "surface"
+start = ["launcher", "clock", "cpu", "cpu-temp", "ram", "active-window", "media"]
+center = ["workspaces"]
+end = ["tray", "notifications", "battery", "volume", "brightness", "control-center"]
+
+[widget.launcher]
+glyph = "rocket"
+
+[widget.clock]
+format = "{:%H:%M %a, %b %d}"
+tooltip_format = "{:%H:%M %a, %b %d}"
+vertical_format = "{:%H %M - %d %m}"
+
+[widget.cpu]
+type = "sysmon"
+stat = "cpu_usage"
+visualization = "none"
+font_family = "monospace"
+
+[widget.cpu-temp]
+type = "sysmon"
+stat = "cpu_temp"
+visualization = "none"
+font_family = "monospace"
+
+[widget.ram]
+type = "sysmon"
+stat = "ram_used"
+visualization = "none"
+font_family = "monospace"
+
+[widget.active-window]
+type = "active_window"
+max_length = 145
+min_length = 0
+title_scroll = "on_hover"
+
+[widget.media]
+artist_first = true
+max_length = 145
+title_scroll = "on_hover"
+hide_when_no_media = true
+
+[widget.workspaces]
+font_weight = 700
+max_label_chars = 2
+pill_scale = 0.6
+labels_only_when_occupied = true
+
+[widget.tray]
+drawer = true
+hide_passive = false
+
+[widget.battery]
+display_mode = "graphic"
+show_label = false
+
+[widget.volume]
+show_label = false
+
+[widget.volume.actions]
+middle = "exec pwvucontrol || pavucontrol"
+
+[widget.brightness]
+show_label = false
+
+[dock]
+enabled = true
+position = "bottom"
+auto_hide = true
+reserve_space = false
+background_opacity = 1.0
+shadow = false
+show_dots = false
+
+[notification]
+background_opacity = 1.0
+keep_dismissed_in_history = false
+layer = "overlay"
+
+[osd]
+position = "top_right"
+hide_delay_ms = 2000
+background_opacity = 1.0
+
+[audio]
+enable_overdrive = true
+enable_sounds = false
+
+[lockscreen]
+transition = []
+blur_intensity = 0.0
+tint_intensity = 0.0
+
+[weather]
+enabled = true
+unit = "celsius"
+
+[backdrop]
+enabled = true
+blur_intensity = 0.4
+tint_intensity = 0.6
