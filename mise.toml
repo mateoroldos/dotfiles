@@ -41,6 +41,8 @@ run = [
   # herdr keeps its own plugin registry; prefix+u, prefix+i and prefix+y open jjui, neovim and yazi through it.
   "herdr plugin link ~/dotfiles/config/herdr/tools-plugin",
   "herdr plugin install plannotator/herdr-annotate --yes",
+  # Downloads Chrome for agent-browser, plus the system libraries Linux needs to run it.
+  "agent-browser install --with-deps",
 ]
 
 [dotfiles]
