@@ -2,8 +2,8 @@
 "pacman:alacritty" = "latest"
 "pacman:noctalia" = "latest"
 "pacman:keyd" = "latest"
-# Noto is the terminal face; symbols-mono supplies nerd icons as a fallback layer
-"pacman:noto-fonts" = "latest"
+# IBM Plex Mono is the terminal face; symbols-mono supplies nerd icons as a fallback layer
+"pacman:ttf-ibm-plex" = "latest"
 "pacman:ttf-nerd-fonts-symbols-mono" = "latest"
 "pacman:discord" = "latest"
 "pacman:bitwarden" = "latest"

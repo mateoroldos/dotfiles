@@ -39,21 +39,20 @@ color = '#b98d7b'
 [font]
 size = 10
 
-# Noto Sans Mono — installed via noto-fonts
-# Stock Noto is not nerd-patched; icons resolve to Symbols Nerd Font Mono
+# IBM Plex Mono — installed via ttf-ibm-plex
+# Not nerd-patched; icons resolve to Symbols Nerd Font Mono
 # (ttf-nerd-fonts-symbols-mono) through fontconfig fallback.
-# No real italic either — fontconfig synthesizes the slant.
 [font.normal]
-family = "Noto Sans Mono"
+family = "IBM Plex Mono"
 style = "Regular"
 [font.bold]
-family = "Noto Sans Mono"
+family = "IBM Plex Mono"
 style = "Bold"
 [font.italic]
-family = "Noto Sans Mono"
+family = "IBM Plex Mono"
 style = "Italic"
 [font.bold_italic]
-family = "Noto Sans Mono"
+family = "IBM Plex Mono"
 style = "Bold Italic"
 
 [selection]
