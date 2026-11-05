@@ -110,10 +110,10 @@ height = 5
 [[keys.command]]
 key = "prefix+shift+g"
 type = "popup"
-command = "cd \"$HERDR_ACTIVE_PANE_CWD\" && echo \"$(gh browse -n)/pulls\"; read -r _"
-description = "show this repo's pull requests link"
-width = "60%"
-height = 5
+command = "cd \"$HERDR_ACTIVE_PANE_CWD\" && tv prs"
+description = "this repo's open pull requests"
+width = "95%"
+height = "90%"
 
 [[keys.command]]
 key = "prefix+u"
