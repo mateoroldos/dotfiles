@@ -1,26 +1,29 @@
 onboarding = false
 
 [theme]
-name = "terminal"   # neutral base; every token below is overridden by cendre
+name = "terminal"   # neutral base; every token below is overridden by mellifluous
 auto_switch = false
 
 [theme.custom]
-accent      = "#ea9875"
-panel_bg    = "#1d1917"
-surface0    = "#26211f"
-surface1    = "#312a28"
-surface_dim = "#141110"
-overlay0    = "#73665b"
-overlay1    = "#a09384"
-text        = "#e6d5c2"
-subtext0    = "#a09384"
-mauve       = "#d1766e"
-green       = "#99af6b"
-yellow      = "#fcba81"
-red         = "#d25780"
-blue        = "#4e89a2"
-teal        = "#20c9cb"
-peach       = "#ea9875"
+accent      = "#cbaa88"
+panel_bg    = "#141414"
+sidebar_bg  = "#141414"
+active_row_bg = "#2d2d2d"
+selection_bg  = "#3b3b3b"
+surface0    = "#242424"
+surface1    = "#2d2d2d"
+surface_dim = "#141414"
+overlay0    = "#5b5b5b"
+overlay1    = "#848484"
+text        = "#dadada"
+subtext0    = "#aeaeae"
+mauve       = "#b99bb5"
+green       = "#b3b393"
+yellow      = "#bfaf8e"
+red         = "#d59192"
+blue        = "#a8a1be"
+teal        = "#a8a1be"
+peach       = "#cbaa88"
 
 [keys]
 prefix = "ctrl+space"

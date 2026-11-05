@@ -1,0 +1,56 @@
+# mellifluous · dark · https://github.com/ramojus/mellifluous.nvim
+# Colors read from the nvim colorscheme: terminal_color_0..15 and UI highlights.
+# Except the greys: the plugin's bright black (#242424) is invisible on the
+# background, so bright black and both whites use its text tiers instead.
+
+[colors.primary]
+background = "#1a1a1a"
+foreground = "#dadada"
+
+[colors.cursor]
+cursor = "#cbaa88"
+text = "#1a1a1a"
+
+[colors.vi_mode_cursor]
+cursor = "#a8a1be"
+text = "#1a1a1a"
+
+[colors.selection]
+background = "#2d2d2d"
+text = "#dadada"
+
+[colors.search.matches]
+background = "#3b372f"
+foreground = "#dadada"
+
+[colors.search.focused_match]
+background = "#9f8f6f"
+foreground = "#1a1a1a"
+
+[colors.hints.start]
+background = "#cbaa88"
+foreground = "#1a1a1a"
+
+[colors.hints.end]
+background = "#242424"
+foreground = "#cbaa88"
+
+[colors.normal]
+black = "#1a1a1a"
+red = "#d59192"
+green = "#b3b393"
+yellow = "#bfaf8e"
+blue = "#a8a1be"
+magenta = "#b99bb5"
+cyan = "#a8a1be"
+white = "#aeaeae"
+
+[colors.bright]
+black = "#848484"
+red = "#ffbcbd"
+green = "#dfdfbe"
+yellow = "#ecdbb9"
+blue = "#d4cdeb"
+magenta = "#e6c6e1"
+cyan = "#d4cdeb"
+white = "#dadada"
