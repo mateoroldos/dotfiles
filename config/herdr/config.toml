@@ -97,17 +97,23 @@ description = "delete jj workspace"
 width = "60%"
 height = "50%"
 
+# Show GitHub links instead of opening them: herdr may run on a headless devbox,
+# and the terminal opens a clicked link on the machine you sit at.
 [[keys.command]]
 key = "prefix+g"
-type = "shell"
-command = "gh browse"
-description = "open this repo on GitHub"
+type = "popup"
+command = "cd \"$HERDR_ACTIVE_PANE_CWD\" && gh browse -n; read -r _"
+description = "show this repo's GitHub link"
+width = "60%"
+height = 5
 
 [[keys.command]]
 key = "prefix+shift+g"
-type = "shell"
-command = "gh pr list --web"
-description = "open this repo's pull requests on GitHub"
+type = "popup"
+command = "cd \"$HERDR_ACTIVE_PANE_CWD\" && echo \"$(gh browse -n)/pulls\"; read -r _"
+description = "show this repo's pull requests link"
+width = "60%"
+height = 5
 
 [[keys.command]]
 key = "prefix+u"
