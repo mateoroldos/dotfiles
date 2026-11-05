@@ -207,6 +207,7 @@ function setup(config)
   -- Runs the `jj sync` alias: fetch, then move every local stack onto trunk.
   config.action("jj.sync", function()
     jj_async("sync")
+    revisions.refresh()
     flash("Synced with trunk")
   end, {
     key = "shift+g",
