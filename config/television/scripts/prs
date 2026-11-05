@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+# Rows and actions for the tv prs channel. Run from inside the repo.
+set -euo pipefail
+
+usage() {
+  echo "usage: prs rows fork|mine|all | prs preview|review|link|merge <#n>" >&2
+  exit 2
+}
+
+# Prints "#n  title  +a −d  checks  age  draft", coloured, newest first.
+cmd_rows() {
+  local source="$1"
+  local args=(--state open --limit 100
+    --json "number,title,headRefName,additions,deletions,isDraft,createdAt,statusCheckRollup")
+  local bookmarks="[]"
+
+  case "${source}" in
+    fork)
+      bookmarks="$(jj log --ignore-working-copy --no-graph -r 'trunk()..@' \
+        -T 'local_bookmarks.map(|b| b.name() ++ "\n").join("")' | jq -R . | jq -s .)"
+      ;;
+    mine) args+=(--author @me) ;;
+    all) ;;
+    *) usage ;;
+  esac
+
+  gh pr list "${args[@]}" | jq -r --arg source "${source}" --argjson bookmarks "${bookmarks}" '
+    def pad($n): (. + (" " * $n))[:$n];
+    def checks:
+      if length == 0 then "\u001b[2m·\u001b[0m"
+      elif any(.[]; (.conclusion // .state) | IN("FAILURE", "ERROR", "CANCELLED", "TIMED_OUT")) then "\u001b[31m✗\u001b[0m"
+      elif any(.[]; (.status // "COMPLETED") != "COMPLETED") then "\u001b[33m•\u001b[0m"
+      else "\u001b[32m✓\u001b[0m" end;
+    def age:
+      (now - (.createdAt | fromdateiso8601)) as $s
+      | if $s < 3600 then "\($s / 60 | floor)m" elif $s < 86400 then "\($s / 3600 | floor)h" else "\($s / 86400 | floor)d" end;
+    .[]
+    | select($source != "fork" or (.headRefName | IN($bookmarks[])))
+    | "#\(.number | tostring | pad(4)) \(.title | if length > 46 then .[:45] + "…" else . end | pad(46)) "
+      + "\u001b[2m\("+\(.additions) −\(.deletions)" | pad(10))\u001b[0m \(.statusCheckRollup | checks)  "
+      + "\u001b[2m\(age | pad(4))\(if .isDraft then " draft" else "" end)\u001b[0m"'
+}
+
+cmd_preview() {
+  GH_FORCE_TTY=100% gh pr view "$1"
+}
+
+cmd_review() {
+  tuicr pr "$1" || true
+}
+
+# Prints the link for the terminal to open; the popup closes when this exits.
+cmd_link() {
+  gh pr view "$1" --json url --jq .url
+  read -r -p "Press enter to go back." _ || true
+}
+
+cmd_merge() {
+  local answer
+
+  read -r -p "Rebase-merge #$1? [y/N] " answer
+  [[ "${answer}" =~ ^[Yy]$ ]] || return 0
+
+  gh pr merge --rebase "$1"
+  jj sync
+  read -r -p "Press enter to go back." _ || true
+}
+
+case "${1:-}" in
+  rows)
+    [[ $# -eq 2 ]] || usage
+    cmd_rows "$2"
+    ;;
+  preview)
+    [[ $# -eq 2 ]] || usage
+    cmd_preview "${2#\#}"
+    ;;
+  review | link | merge)
+    [[ $# -eq 2 ]] || usage
+    "cmd_$1" "${2#\#}"
+    exec tv prs
+    ;;
+  *) usage ;;
+esac

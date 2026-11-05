@@ -1,0 +1,40 @@
+# Open PRs of the current repo, sized for review. Enter reviews in tuicr.
+# Actions run with tv closed, so they own the keyboard, and reopen tv when done.
+
+[metadata]
+name = "prs"
+description = "Open PRs: this fork's, mine, or all"
+requirements = ["gh", "jq", "jj", "tuicr"]
+
+[source]
+command = [
+  { name = "This fork", run = "~/dotfiles/config/television/scripts/prs rows fork" },
+  { name = "Mine", run = "~/dotfiles/config/television/scripts/prs rows mine" },
+  { name = "All", run = "~/dotfiles/config/television/scripts/prs rows all" },
+]
+ansi = true
+no_sort = true
+output = "{strip_ansi|split: :0}"
+
+[preview]
+command = "~/dotfiles/config/television/scripts/prs preview '{strip_ansi|split: :0}'"
+
+[keybindings]
+enter = "actions:review"
+ctrl-g = "actions:link"
+alt-m = "actions:merge"
+
+[actions.review]
+description = "Review the PR in tuicr"
+command = "~/dotfiles/config/television/scripts/prs review '{strip_ansi|split: :0}'"
+mode = "execute"
+
+[actions.link]
+description = "Print the PR's link"
+command = "~/dotfiles/config/television/scripts/prs link '{strip_ansi|split: :0}'"
+mode = "execute"
+
+[actions.merge]
+description = "Rebase-merge the PR, then jj sync"
+command = "~/dotfiles/config/television/scripts/prs merge '{strip_ansi|split: :0}'"
+mode = "execute"
