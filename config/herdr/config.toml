@@ -93,9 +93,21 @@ height = "50%"
 key = "prefix+d"
 type = "popup"
 command = "/home/runguinator/dotfiles/config/herdr/scripts/jj-ws rm"
-description = "delete jj workspace and development data"
+description = "delete jj workspace"
 width = "60%"
 height = "50%"
+
+[[keys.command]]
+key = "prefix+g"
+type = "shell"
+command = "gh browse"
+description = "open this repo on GitHub"
+
+[[keys.command]]
+key = "prefix+shift+g"
+type = "shell"
+command = "gh pr list --web"
+description = "open this repo's pull requests on GitHub"
 
 [[keys.command]]
 key = "prefix+u"
