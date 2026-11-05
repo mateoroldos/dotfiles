@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Open herdr views on jj workspaces. The jj aliases ws-add and ws-remove own the workspaces;
-# this script only adds the popup prompts and the tabs. Runs in a herdr popup, so it reads the
+# Open repos and their jj workspaces (forks) in herdr. The jj aliases ws-add and ws-remove own
+# the workspaces; this script adds the picker, the prompts, and the herdr views. Runs in a herdr popup, so it reads the
 # focused pane from HERDR_ACTIVE_* and never types commands into your shell.
 set -euo pipefail
 
 usage() {
-  echo "usage: jj-ws new tab|workspace | jj-ws switch | jj-ws rm [dir]" >&2
+  echo "usage: jj-ws new tab|workspace | jj-ws open | jj-ws rows [all|repo|fork] | jj-ws preview|fork <dir> | jj-ws rm [dir]" >&2
   exit 2
 }
 
@@ -107,39 +107,121 @@ cmd_new() {
   fi
 }
 
-cmd_switch() {
-  local repo choice key name root tab
+# Exits 0 when a herdr pane works in dir or below it.
+is_open() {
+  local dir="$1" open_cwds="$2"
 
-  cd "$(focused_dir)"
-  repo="$(repo_name)"
+  awk -v dir="${dir}" '
+    index($0, dir) == 1 && (length($0) == length(dir) || substr($0, length(dir) + 1, 1) == "/") { found = 1 }
+    END { exit !found }' <<<"${open_cwds}"
+}
 
-  choice="$(jj workspace list -T 'name ++ "\t" ++ root ++ "\n"' |
-    fzf --delimiter='\t' --with-nth=1 --expect=ctrl-o,ctrl-d \
-      --prompt="${repo}> " --header='enter: tab  ctrl-o: herdr workspace  ctrl-d: delete')" || exit 0
-  key="$(sed -n 1p <<<"${choice}")"
-  IFS=$'\t' read -r name root <<<"$(sed -n 2p <<<"${choice}")"
+# Prints one row with its path last, where the tv channel reads it. ● marks what herdr has open.
+# width is the visible width of indent and label; path_style is an SGR code, 8 hides the path.
+print_row() {
+  local indent="$1" label="$2" width="$3" path="$4" path_style="$5" open_cwds="$6"
+  local mark=" "
 
-  if [[ "${key}" == ctrl-d ]]; then
-    cmd_rm "${root}"
+  if is_open "${path}" "${open_cwds}"; then
+    mark=$'\e[33m●\e[0m'
+  fi
+
+  printf '%s%s %s%*s  \e[%sm%s\e[0m\n' "${indent}" "${mark}" "${label}" "$((width < 32 ? 32 - width : 1))" "" \
+    "${path_style}" "${path/#${HOME}/\~}"
+}
+
+# Prints a row for each repo zoxide knows, most used first, with its forks indented below.
+# kind is all, repo, or fork; the fork list is flat and names each fork's repo.
+cmd_rows() {
+  local kind="${1:-all}"
+  local open_cwds dir repo forks index glyph name root
+
+  open_cwds="$(herdr pane list 2>/dev/null | jq -r '.result.panes[] | .cwd, (.foreground_cwd // empty)')"
+
+  zoxide query -l | while read -r dir; do
+    # A main jj workspace holds its store in .jj/repo; a git-only repo has a .git directory.
+    [[ -d "${dir}/.jj/repo" || (-d "${dir}/.git" && ! -e "${dir}/.jj") ]] || continue
+    repo="$(basename "${dir}")"
+
+    if [[ "${kind}" != fork ]]; then
+      print_row "" $'\e[1m'"${repo}"$'\e[0m' "${#repo}" "${dir}" 2 "${open_cwds}"
+    fi
+
+    [[ "${kind}" != repo && -d "${dir}/.jj/repo" ]] || continue
+    mapfile -t forks < <(jj --ignore-working-copy -R "${dir}" workspace list -T 'name ++ "\t" ++ root ++ "\n"' |
+      awk -F '\t' '$1 != "default" && system("test -d \"" $2 "\"") == 0')
+
+    for index in "${!forks[@]}"; do
+      IFS=$'\t' read -r name root <<<"${forks[index]}"
+
+      if [[ "${kind}" == fork ]]; then
+        print_row "" $'\e[2m'"${repo}/"$'\e[0m'"${name}" "$((${#repo} + 1 + ${#name}))" "${root}" 2 "${open_cwds}"
+      else
+        glyph="├"
+        if ((index == ${#forks[@]} - 1)); then
+          glyph="└"
+        fi
+        print_row "  ${glyph} " "${name}" 0 "${root}" 8 "${open_cwds}"
+      fi
+    done
+  done
+}
+
+# Shows what a repo or fork holds beyond trunk.
+cmd_preview() {
+  local dir="${1/#\~/${HOME}}"
+
+  if [[ -e "${dir}/.jj" ]]; then
+    jj --ignore-working-copy -R "${dir}" log --color=always -r 'trunk() | trunk()..@'
+  else
+    git -C "${dir}" log --oneline --color=always -15
+  fi
+}
+
+cmd_fork() {
+  local dir="${1/#\~/${HOME}}"
+  local root repo name destination
+
+  [[ -e "${dir}/.jj" ]] || die "Forks need a jj repo: ${dir}"
+  root="$(jj --ignore-working-copy -R "${dir}" workspace root --name default)"
+  repo="$(basename "${root}")"
+  cd "${root}"
+
+  read -r -e -i "$(random_name)" -p "New fork of ${repo}: " name
+  destination="$(jj ws-add "${name}")" || die "Could not create the fork."
+
+  open_view workspace "${repo}/${name}" "${destination}"
+}
+
+cmd_open() {
+  local path tab root label
+
+  path="$(tv projects)" || exit 0
+  [[ -n "${path}" ]] || exit 0
+  path="${path/#\~/${HOME}}"
+
+  tab="$(open_tab_of "${path}")"
+  if [[ -n "${tab}" ]]; then
+    herdr tab focus "${tab}" >/dev/null
     return
   fi
 
-  tab="$(open_tab_of "${root}")"
-  if [[ -n "${tab}" ]]; then
-    herdr tab focus "${tab}" >/dev/null
-  elif [[ "${key}" == ctrl-o ]]; then
-    open_view workspace "${repo}/${name}" "${root}"
-  else
-    open_view tab "${name}" "${root}"
+  label="$(basename "${path}")"
+  if [[ -f "${path}/.jj/repo" ]]; then
+    root="$(jj --ignore-working-copy -R "${path}" workspace root --name default)"
+    label="$(basename "${root}")/${label}"
   fi
+
+  open_view workspace "${label}" "${path}"
 }
 
 cmd_rm() {
   local dir="${1:-$(focused_dir)}"
   local root views kind id
 
-  cd "${dir}"
+  cd "${dir/#\~/${HOME}}"
   root="$(realpath "$(jj root)")"
+  [[ ! -d "${root}/.jj/repo" ]] || die "Only forks can be deleted: ${root} holds the repo."
   views="$(views_inside "${root}")"
 
   jj ws-remove || die "Workspace kept."
@@ -157,9 +239,17 @@ case "${1:-}" in
     [[ $# -eq 2 ]] || usage
     cmd_new "$2"
     ;;
-  switch)
+  open)
     [[ $# -eq 1 ]] || usage
-    cmd_switch
+    cmd_open
+    ;;
+  rows)
+    [[ $# -le 2 ]] || usage
+    cmd_rows "${2:-all}"
+    ;;
+  preview | fork)
+    [[ $# -eq 2 ]] || usage
+    "cmd_$1" "$2"
     ;;
   rm)
     [[ $# -le 2 ]] || usage

@@ -1,0 +1,33 @@
+# Repos zoxide knows, each followed by its jj forks. Herdr opens the pick through `jj-ws open`.
+
+[metadata]
+name = "projects"
+description = "Repos and their jj forks"
+requirements = ["jj", "zoxide"]
+
+[source]
+command = [
+  { name = "All", run = "~/dotfiles/config/herdr/scripts/jj-ws rows" },
+  { name = "Repos", run = "~/dotfiles/config/herdr/scripts/jj-ws rows repo" },
+  { name = "Forks", run = "~/dotfiles/config/herdr/scripts/jj-ws rows fork" },
+]
+ansi = true
+no_sort = true
+output = "{strip_ansi|split: :-1}"
+
+[preview]
+command = "~/dotfiles/config/herdr/scripts/jj-ws preview '{strip_ansi|split: :-1}'"
+
+[keybindings]
+ctrl-f = "actions:fork"
+ctrl-d = "actions:delete"
+
+[actions.fork]
+description = "Fork the selected repo from trunk"
+command = "~/dotfiles/config/herdr/scripts/jj-ws fork '{strip_ansi|split: :-1}'"
+mode = "execute"
+
+[actions.delete]
+description = "Delete the selected fork"
+command = "~/dotfiles/config/herdr/scripts/jj-ws rm '{strip_ansi|split: :-1}'"
+mode = "execute"

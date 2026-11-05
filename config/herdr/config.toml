@@ -82,12 +82,12 @@ width = "60%"
 height = "20%"
 
 [[keys.command]]
-key = "prefix+w"
+key = "prefix+p"
 type = "popup"
-command = "/home/runguinator/dotfiles/config/herdr/scripts/jj-ws switch"
-description = "switch jj workspace"
-width = "60%"
-height = "50%"
+command = "/home/runguinator/dotfiles/config/herdr/scripts/jj-ws open"
+description = "open a repo or fork"
+width = "85%"
+height = "70%"
 
 [[keys.command]]
 key = "prefix+d"
