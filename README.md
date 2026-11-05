@@ -15,6 +15,8 @@ desktop/           desktop-only configs and keyd/default.conf
 
 Dev tools live in `config/mise/config.toml`, mise's global config. Add one with `mise use -g <tool>`.
 
+A tool for one machine only goes in `~/.config/mise/conf.d/local.toml`, which mise loads and dotfiles doesn't track: `mise use --path ~/.config/mise/conf.d/local.toml <tool>`.
+
 ## Usage
 
 The repo must live at `~/dotfiles`; `mise.toml` sets it as `dotfiles.root`.
