@@ -1,0 +1,51 @@
+# mellifluous · dark · https://github.com/ramojus/mellifluous.nvim
+
+panel_bg = "#1a1a1a"
+bg_highlight = "#2d2d2d"
+fg_primary = "#dadada"
+fg_secondary = "#aeaeae"
+fg_dim = "#848484"
+
+diff_add = "#b3b393"
+diff_add_bg = "#2d2d21"
+diff_del = "#d59192"
+diff_del_bg = "#3d2425"
+diff_context = "#dadada"
+diff_hunk_header = "#cbaa88"
+expanded_context_fg = "#848484"
+
+syntax_add_bg = "#2d2d21"
+syntax_del_bg = "#3d2425"
+
+file_added = "#b3b393"
+file_modified = "#cbaa88"
+file_deleted = "#d59192"
+file_renamed = "#a8a1be"
+
+reviewed = "#b3b393"
+pending = "#cbaa88"
+
+comment_note = "#848484"
+comment_suggestion = "#cbaa88"
+comment_issue = "#d59192"
+comment_praise = "#b3b393"
+
+border_focused = "#a8a1be"
+border_unfocused = "#5b5b5b"
+status_bar_bg = "#2d2d2d"
+cursor_color = "#bfaf8e"
+cursor_line_bg = "#242424"
+branch_name = "#b99bb5"
+help_indicator = "#aeaeae"
+
+message_info_fg = "#1a1a1a"
+message_info_bg = "#938ca8"
+message_warning_fg = "#1a1a1a"
+message_warning_bg = "#aa8a69"
+message_error_fg = "#1a1a1a"
+message_error_bg = "#be7c7d"
+update_badge_fg = "#1a1a1a"
+update_badge_bg = "#bfaf8e"
+
+mode_fg = "#1a1a1a"
+mode_bg = "#bfaf8e"

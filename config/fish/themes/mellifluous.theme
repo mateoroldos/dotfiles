@@ -1,0 +1,32 @@
+# mellifluous · dark · https://github.com/ramojus/mellifluous.nvim
+
+# preferred_background: 1a1a1a
+fish_color_normal dadada
+fish_color_command bfaf8e
+fish_color_keyword d59192
+fish_color_quote b3b393
+fish_color_redirection a8a1be
+fish_color_end aeaeae
+fish_color_error be7c7d
+fish_color_param aeaeae
+fish_color_comment 848484
+fish_color_selection --background=2d2d2d
+fish_color_operator aeaeae
+fish_color_escape cbaa88
+fish_color_autosuggestion 5b5b5b
+fish_color_cwd a8a1be
+fish_color_user b3b393
+fish_color_host a8a1be
+fish_color_host_remote aa8a69
+fish_color_cancel be7c7d
+fish_color_search_match --background=3b372f
+fish_color_valid_path --underline
+
+fish_pager_color_progress cbaa88
+fish_pager_color_prefix bfaf8e --bold
+fish_pager_color_completion dadada
+fish_pager_color_description 848484
+fish_pager_color_selected_background --background=2d2d2d
+fish_pager_color_selected_prefix bfaf8e --bold
+fish_pager_color_selected_completion dadada
+fish_pager_color_selected_description aeaeae

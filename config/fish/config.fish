@@ -10,7 +10,7 @@ fish_add_path --path ~/.local/bin
 mise activate fish | source
 zoxide init fish | source
 
-fish_config theme choose cendre
+fish_config theme choose mellifluous
 
 set -gx EDITOR nvim
 

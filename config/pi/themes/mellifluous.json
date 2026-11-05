@@ -1,23 +1,23 @@
 {
   "$schema": "https://raw.githubusercontent.com/earendil-works/pi/main/packages/coding-agent/src/modes/interactive/theme/theme-schema.json",
-  "name": "cendre",
+  "name": "mellifluous",
   "vars": {
-    "bg": "#1d1917",
-    "fg": "#e6d5c2",
-    "bright": "#a09384",
-    "muted": "#73665b",
-    "dim": "#4e4541",
-    "panel": "#26211f",
-    "panelAlt": "#312a28",
-    "blue": "#4e89a2",
-    "green": "#99af6b",
-    "yellow": "#fcba81",
-    "orange": "#ea9875",
-    "purple": "#9480ba",
-    "red": "#d1766e",
-    "successBg": "#262c1b",
-    "errorBg": "#372321",
-    "warningBg": "#362c1c"
+    "bg": "#1a1a1a",
+    "fg": "#dadada",
+    "bright": "#aeaeae",
+    "muted": "#848484",
+    "dim": "#5b5b5b",
+    "panel": "#242424",
+    "panelAlt": "#2d2d2d",
+    "blue": "#a8a1be",
+    "green": "#b3b393",
+    "yellow": "#bfaf8e",
+    "orange": "#cbaa88",
+    "purple": "#b99bb5",
+    "red": "#d59192",
+    "successBg": "#2d2d21",
+    "errorBg": "#3d2425",
+    "warningBg": "#342a1f"
   },
   "colors": {
     "accent": "blue",
@@ -74,8 +74,8 @@
     "bashMode": "orange"
   },
   "export": {
-    "pageBg": "#1d1917",
-    "cardBg": "#26211f",
-    "infoBg": "#312a28"
+    "pageBg": "#1a1a1a",
+    "cardBg": "#242424",
+    "infoBg": "#2d2d2d"
   }
 }
