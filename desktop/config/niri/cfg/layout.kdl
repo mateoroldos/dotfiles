@@ -11,9 +11,9 @@
         border {
             on
             width 1
-            active-color "#ea9875"
-            inactive-color "#73665b"
-            urgent-color "#d25780"
+            active-color "#cbaa88"
+            inactive-color "#848484"
+            urgent-color "#be7c7d"
         }
 
         preset-column-widths {
