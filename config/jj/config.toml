@@ -28,3 +28,27 @@ jj rebase -b 'mutable()' -o 'trunk()' --skip-emptied
 jj simplify-parents -r 'mutable()'
 jj log -r 'mutable() & ~empty() & ~::trunk()'
 """, ""]
+
+# New workspace on trunk, in ~/.workspaces/<repo>/<name>. Prints only its path, so callers can cd or open a tab there.
+ws-add = ["util", "exec", "--", "bash", "-c", """
+set -euo pipefail
+name="${1:?usage: jj ws-add <name>}"
+repo="$(basename "$(jj workspace root --name default)")"
+dest="${HOME}/.workspaces/${repo}/${name}"
+mkdir -p "$(dirname "${dest}")"
+jj workspace add --name "${name}" -r 'trunk()' --sparse-patterns full "${dest}" >&2
+echo "${dest}"
+""", ""]
+
+# Remove a workspace (default: the current one), refusing while it holds work no other workspace builds on.
+ws-remove = ["util", "exec", "--", "bash", "-c", """
+set -euo pipefail
+name="${1:-$(jj workspace list -T 'if(target.current_working_copy(), name ++ "\\n")')}"
+work="$(jj log --no-graph -r "(trunk()..${name}@ ~ ::(working_copies() ~ ${name}@)) ~ empty()" \
+  -T 'change_id.short() ++ " " ++ description.first_line() ++ "\\n"')"
+if [[ -n "${work}" ]]; then
+  printf 'Not landed in %s:\\n%s\\nLand or abandon it, or run: jj workspace remove %s\\n' "${name}" "${work}" "${name}" >&2
+  exit 1
+fi
+jj workspace remove "${name}"
+""", ""]
