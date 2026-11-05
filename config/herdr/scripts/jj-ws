@@ -34,18 +34,26 @@ random_name() {
   echo "${adjectives[RANDOM % ${#adjectives[@]}]}-${nouns[RANDOM % ${#nouns[@]}]}"
 }
 
+# Opens cwd as a tab or a herdr workspace: a shell on the left, and jjui on the right in a jj repo.
 open_view() {
-  local mode="$1" repo="$2" name="$3" cwd="$4"
+  local mode="$1" label="$2" cwd="$3"
+  local created jjui_pane
 
   case "${mode}" in
     tab)
-      herdr tab create --workspace "${HERDR_ACTIVE_WORKSPACE_ID:?run jj-ws from herdr}" \
-        --cwd "${cwd}" --label "${name}" --focus >/dev/null
+      created="$(herdr tab create --workspace "${HERDR_ACTIVE_WORKSPACE_ID:?run jj-ws from herdr}" \
+        --cwd "${cwd}" --label "${label}" --focus)"
       ;;
     workspace)
-      herdr workspace create --cwd "${cwd}" --label "${repo}/${name}" --focus >/dev/null
+      created="$(herdr workspace create --cwd "${cwd}" --label "${label}" --focus)"
       ;;
   esac
+
+  if [[ -e "${cwd}/.jj" ]]; then
+    jjui_pane="$(herdr pane split "$(jq -r .result.root_pane.pane_id <<<"${created}")" \
+      --direction right --cwd "${cwd}" | jq -r .result.pane.pane_id)"
+    herdr pane run "${jjui_pane}" jjui >/dev/null
+  fi
 }
 
 # Prints the tab of the first herdr pane working inside root, if any.
@@ -92,7 +100,11 @@ cmd_new() {
   read -r -e -i "$(random_name)" -p "New workspace in ${repo}: " name
   destination="$(jj ws-add "${name}")" || die "Could not create the jj workspace."
 
-  open_view "${mode}" "${repo}" "${name}" "${destination}"
+  if [[ "${mode}" == tab ]]; then
+    open_view tab "${name}" "${destination}"
+  else
+    open_view workspace "${repo}/${name}" "${destination}"
+  fi
 }
 
 cmd_switch() {
@@ -116,9 +128,9 @@ cmd_switch() {
   if [[ -n "${tab}" ]]; then
     herdr tab focus "${tab}" >/dev/null
   elif [[ "${key}" == ctrl-o ]]; then
-    open_view workspace "${repo}" "${name}" "${root}"
+    open_view workspace "${repo}/${name}" "${root}"
   else
-    open_view tab "${repo}" "${name}" "${root}"
+    open_view tab "${name}" "${root}"
   fi
 }
 
