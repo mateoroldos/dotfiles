@@ -37,6 +37,8 @@ repo="$(basename "$(jj workspace root --name default)")"
 dest="${HOME}/.workspaces/${repo}/${name}"
 mkdir -p "$(dirname "${dest}")"
 jj workspace add --name "${name}" -r 'trunk()' --sparse-patterns full "${dest}" >&2
+# jj log and jjui in the fork show only its own work.
+jj -R "${dest}" config set --workspace revsets.log 'trunk() | trunk()..@'
 echo "${dest}"
 """, ""]
 
