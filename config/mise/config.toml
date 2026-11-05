@@ -7,7 +7,7 @@ usage = "latest"
 
 # cli
 neovim = "latest"
-jj = "latest"
+jj = "0.47"
 jjui = "latest"
 yazi = "latest"
 opencode = "latest"
