@@ -20,7 +20,7 @@ command = "~/dotfiles/config/herdr/scripts/jj-ws preview '{strip_ansi|split: :-1
 
 [keybindings]
 ctrl-f = "actions:fork"
-ctrl-d = "actions:delete"
+ctrl-d = ["actions:delete", "reload_source"]
 
 [actions.fork]
 description = "Fork the selected repo from trunk"
@@ -30,4 +30,4 @@ mode = "execute"
 [actions.delete]
 description = "Delete the selected fork"
 command = "~/dotfiles/config/herdr/scripts/jj-ws rm '{strip_ansi|split: :-1}'"
-mode = "execute"
+mode = "fork"
