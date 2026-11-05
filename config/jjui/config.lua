@@ -204,6 +204,16 @@ function setup(config)
     desc = "tuicr working copy",
   })
 
+  -- Runs the `jj sync` alias: fetch, then move every local stack onto trunk.
+  config.action("jj.sync", function()
+    jj_async("sync")
+    flash("Synced with trunk")
+  end, {
+    key = "shift+g",
+    scope = "revisions",
+    desc = "sync",
+  })
+
   config.action("gh.menu", function()
     local change_id = context.change_id()
     if not change_id or change_id == "" then
