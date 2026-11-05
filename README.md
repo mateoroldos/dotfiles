@@ -13,6 +13,8 @@ config/            linked into ~/.config on every machine
 desktop/           desktop-only configs and keyd/default.conf
 ```
 
+Configs are linked one file at a time. After adding or deleting a file under `config/` or `desktop/config/`, run `mise dotfiles apply`.
+
 Dev tools live in `config/mise/config.toml`, mise's global config. Add one with `mise use -g <tool>`.
 
 A tool for one machine only goes in `~/.config/mise/conf.d/local.toml`, which mise loads and dotfiles doesn't track: `mise use --path ~/.config/mise/conf.d/local.toml <tool>`.
