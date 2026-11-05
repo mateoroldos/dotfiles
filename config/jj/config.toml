@@ -16,3 +16,15 @@ diff-instructions = false
 'format_short_signature(signature)' = 'signature.name()'  # name, not email  ('""' = hide author)
 'format_timestamp(timestamp)'       = '""'                # no date/time
 'format_short_commit_id(id)'        = '""'                # no commit hash (change id stays)
+
+[aliases]
+# Fetch, then move every local stack onto main; a change main already holds (a merged
+# PR's local copy) becomes empty on the way and is dropped. As in Chromium's
+# tools/jj/sync.py; simplify-parents tidies the odd shapes --skip-emptied can leave on merges.
+sync = ["util", "exec", "--", "bash", "-c", """
+set -e
+jj git fetch
+jj rebase -b 'mutable()' -o 'trunk()' --skip-emptied
+jj simplify-parents -r 'mutable()'
+jj log -r 'mutable() & ~empty() & ~::trunk()'
+""", ""]
