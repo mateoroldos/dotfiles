@@ -11,15 +11,19 @@ vim.keymap.set("n", "<leader>fh", snacks.git_status, { desc = "Git Changed Files
 
 -- vim-herdr-navigation: C-h/j/k/l move across nvim splits, then across herdr panes at an edge.
 -- Set here, not in after/plugin, because LazyVim maps C-h/j/k/l to plain window moves on VeryLazy.
+-- The herdr TUI sets HERDR_PANE_ID in its panes; herdr-app's terminals set HC_TERMINAL_ID.
 local function nav(wincmd, dir)
 	local prev = vim.api.nvim_get_current_win()
 	vim.cmd("wincmd " .. wincmd)
 	if vim.api.nvim_get_current_win() ~= prev then
 		return
 	end
+
 	if vim.env.HERDR_PANE_ID and vim.env.HERDR_PANE_ID ~= "" then
 		local herdr = vim.env.HERDR_BIN_PATH or "herdr"
 		vim.fn.system({ herdr, "pane", "focus", "--direction", dir, "--current" })
+	elseif vim.env.HC_TERMINAL_ID and vim.env.HC_TERMINAL_ID ~= "" then
+		vim.fn.system({ "herdr-app", "do", "pane.go:" .. dir })
 	end
 end
 
