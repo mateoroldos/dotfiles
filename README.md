@@ -13,7 +13,7 @@ config/            linked into ~/.config on every machine
 desktop/           desktop-only configs and keyd/default.conf
 ```
 
-Configs are linked one file at a time. After adding or deleting a file under `config/` or `desktop/config/`, run `mise dotfiles apply`.
+Configs are linked one file at a time. After adding or deleting a file under `config/`, run `mise dotfiles apply`. On the desktop, run `mise -E desktop dotfiles apply`: `desktop/config/` is declared in `mise.desktop.toml`, which loads only with `-E desktop`.
 
 herdr-app reloads a file only when its link in `~/.config/herdr-app` changes. After editing one here, run `touch -h ~/.config/herdr-app/<file>`. Its theme comes from `settings.json`; picking another theme in the app overrides it for that layout.
 
