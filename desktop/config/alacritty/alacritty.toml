@@ -39,21 +39,10 @@ color = '#b98d7b'
 [font]
 size = 10
 
-# IBM Plex Mono — installed via ttf-ibm-plex
-# Not nerd-patched; icons resolve to Symbols Nerd Font Mono
-# (ttf-nerd-fonts-symbols-mono) through fontconfig fallback.
+# Lilex (IBM Plex Mono plus ligatures, which alacritty doesn't draw); bold and
+# italic come from the same family.
 [font.normal]
-family = "IBM Plex Mono"
-style = "Regular"
-[font.bold]
-family = "IBM Plex Mono"
-style = "Bold"
-[font.italic]
-family = "IBM Plex Mono"
-style = "Italic"
-[font.bold_italic]
-family = "IBM Plex Mono"
-style = "Bold Italic"
+family = "Lilex Nerd Font Mono"
 
 [selection]
 semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"
