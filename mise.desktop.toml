@@ -2,10 +2,9 @@
 "pacman:alacritty" = "latest"
 "pacman:noctalia" = "latest"
 "pacman:keyd" = "latest"
-# IBM Plex Mono is the terminal face; symbols-mono supplies nerd icons as a fallback layer
+# IBM Plex Sans is herdr-app's UI face
 "pacman:ttf-ibm-plex" = "latest"
-"pacman:ttf-nerd-fonts-symbols-mono" = "latest"
-# Lilex is Plex Mono with programming ligatures, herdr-app's terminal face
+# Lilex is IBM Plex Mono with programming ligatures, the terminal face
 "pacman:ttf-lilex-nerd" = "latest"
 "pacman:discord" = "latest"
 "pacman:bitwarden" = "latest"
