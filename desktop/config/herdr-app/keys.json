@@ -50,6 +50,7 @@
     "ctrl-space shift-u": { "command": "tab.new", "args": { "name": "jjui", "argv": ["jjui"] } },
     "ctrl-space shift-i": { "command": "tab.new", "args": { "name": "nvim", "argv": ["nvim"] } },
     "ctrl-space shift-y": { "command": "tab.new", "args": { "name": "yazi", "argv": ["yazi"] } },
+    "ctrl-space o": { "command": "tab.new", "args": { "name": "prs", "argv": ["tv", "prs"] } },
 
     "alt-1": "space.select:1",
     "alt-2": "space.select:2",
