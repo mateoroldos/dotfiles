@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-# Open repos and their jj workspaces (forks) in herdr. The jj aliases ws-add and ws-remove own
-# the workspaces; this script adds the picker, the prompts, and the herdr views. Runs in a herdr popup, so it reads the
-# focused pane from HERDR_ACTIVE_* and never types commands into your shell.
+# Open repos and their jj workspaces (forks) in herdr-app. The jj aliases ws-add and ws-remove own
+# the workspaces; this script adds the picker, the prompts, and the herdr-app views. herdr-app keys
+# start it in its own tab, in the focused terminal's folder, and it closes that tab when done.
 set -euo pipefail
 
 usage() {
-  echo "usage: jj-ws new tab|workspace | jj-ws open | jj-ws rows [all|repo|fork] | jj-ws preview|fork <dir> | jj-ws rm [dir]" >&2
+  echo "usage: jj-ws new tab|space | jj-ws open | jj-ws rows [all|repo|fork] | jj-ws preview|fork <dir> | jj-ws rm [dir]" >&2
   exit 2
 }
 
-# The popup closes when the script exits, so hold errors on screen.
+# The tab stays after the script exits, so hold errors on screen, then close it.
 die() {
   echo "$*" >&2
   read -r -p "Press enter to close." _ || true
@@ -17,7 +17,7 @@ die() {
 }
 
 focused_dir() {
-  local cwd="${HERDR_ACTIVE_PANE_CWD:-${PWD}}"
+  local cwd="${PWD}"
 
   (cd "${cwd}" && jj root >/dev/null 2>&1) || die "Not in a jj repo: ${cwd}"
   echo "${cwd}"
@@ -34,65 +34,70 @@ random_name() {
   echo "${adjectives[RANDOM % ${#adjectives[@]}]}-${nouns[RANDOM % ${#nouns[@]}]}"
 }
 
-# Opens cwd as a tab or a herdr workspace: a shell on the left, and jjui on the right in a jj repo.
+# Opens cwd as a tab or a herdr-app space: a shell on the left, and jjui on the right in a jj repo.
 open_view() {
   local mode="$1" label="$2" cwd="$3"
-  local created jjui_pane
 
-  case "${mode}" in
-    tab)
-      created="$(herdr tab create --workspace "${HERDR_ACTIVE_WORKSPACE_ID:?run jj-ws from herdr}" \
-        --cwd "${cwd}" --label "${label}" --focus)"
-      ;;
-    workspace)
-      created="$(herdr workspace create --cwd "${cwd}" --label "${label}" --focus)"
-      ;;
-  esac
+  herdr-app do "${mode}.new" --name "${label}" --folder "${cwd}" >/dev/null
 
   if [[ -e "${cwd}/.jj" ]]; then
-    jjui_pane="$(herdr pane split "$(jq -r .result.root_pane.pane_id <<<"${created}")" \
-      --direction right --cwd "${cwd}" | jq -r .result.pane.pane_id)"
-    herdr pane run "${jjui_pane}" jjui >/dev/null
+    herdr-app do pane.split --direction right --argv '["jjui"]' >/dev/null
   fi
 }
 
-# Prints the tab of the first herdr pane working inside root, if any.
+# Prints one JSON array of this computer's terminals: their space, tab and folder.
+terminals() {
+  jq -n --argjson ls "$(herdr-app ls)" --argjson hc "$(hc ls --json)" '
+    ($hc.terminals | map(select(.address | contains("/") | not) | {(.address): .cwd}) | add // {}) as $cwd
+    | [$ls.spaces[] | .id as $space | .tabs[] | .id as $tab | .terminals[]
+        | select($cwd[.terminal]) | {space: $space, tab: $tab, terminal, cwd: $cwd[.terminal]}]'
+}
+
+# Prints the tab of the first terminal working inside root, other than this script's, if any.
 open_tab_of() {
   local root="$1"
 
-  herdr pane list | jq -r --arg root "${root}" '
-    .result.panes[]
-    | select([.cwd, .foreground_cwd] | any((. // "") as $cwd
-        | $cwd == $root or ($cwd | startswith($root + "/"))))
-    | .tab_id' | head -n 1
+  terminals | jq -r --arg root "${root}" --arg self "${HC_TERMINAL_ID:-}" '
+    map(select(.terminal != $self and (.cwd == $root or (.cwd | startswith($root + "/")))))
+    | .[0].tab // empty'
 }
 
-# Prints "tab <id>" or "workspace <id>" for each herdr view working inside
-# root: the whole workspace when all its tabs are inside, else each tab. The
-# view behind the popup comes last, so closing it can't cut the loop short.
+# Prints "tab <id>" or "space <id>" for each herdr-app view working inside root:
+# the whole space when all its tabs are inside, else each tab. This script's own
+# tab is left for the exit to close, and its space comes last.
 views_inside() {
   local root="$1"
 
-  { herdr tab list; herdr pane list; } | jq -rs --arg root "${root}" \
-    --arg active_workspace "${HERDR_ACTIVE_WORKSPACE_ID:-}" \
-    --arg active_tab "${HERDR_ACTIVE_TAB_ID:-}" '
-    def inside: (. // "") as $cwd | $cwd == $root or ($cwd | startswith($root + "/"));
-    (.[1].result.panes | map(select([.cwd, .foreground_cwd] | any(inside)) | .tab_id)) as $hit
-    | .[0].result.tabs
-    | group_by(.workspace_id)
-    | map(map(.tab_id) as $tabs
-        | if ($tabs - $hit) == [] then [{kind: "workspace", id: .[0].workspace_id}]
+  terminals | jq -r --arg root "${root}" --arg self "${HC_TERMINAL_ID:-}" '
+    (map(select(.terminal == $self)) | .[0] // {}) as $me
+    | map(select(.tab != $me.tab))
+    | (map(select(.cwd == $root or (.cwd | startswith($root + "/"))) | .tab)) as $hit
+    | group_by(.space)
+    | map((map(.tab) | unique) as $tabs
+        | if ($tabs - $hit) == [] then [{kind: "space", id: .[0].space}]
           else [$tabs[] | select(IN($hit[])) | {kind: "tab", id: .}] end)
     | add // []
-    | sort_by(.id == $active_workspace or .id == $active_tab)
+    | sort_by(.id == $me.space)
     | .[] | "\(.kind) \(.id)"'
+}
+
+# Closes the tab herdr-app started this script in.
+close_own_tab() {
+  local tab
+
+  tab="$(herdr-app ls | jq -r --arg self "${HC_TERMINAL_ID:-}" \
+    '.spaces[].tabs[] | select(any(.terminals[]; .terminal == $self)) | .id')"
+
+  if [[ -n "${tab}" ]]; then
+    herdr-app do tab.close --id "${tab}" >/dev/null
+  fi
 }
 
 cmd_new() {
   local mode="$1"
   local repo name destination
 
-  [[ "${mode}" == tab || "${mode}" == workspace ]] || usage
+  [[ "${mode}" == tab || "${mode}" == space ]] || usage
 
   cd "$(focused_dir)"
   repo="$(repo_name)"
@@ -103,11 +108,11 @@ cmd_new() {
   if [[ "${mode}" == tab ]]; then
     open_view tab "${name}" "${destination}"
   else
-    open_view workspace "${repo}/${name}" "${destination}"
+    open_view space "${repo}/${name}" "${destination}"
   fi
 }
 
-# Exits 0 when a herdr pane works in dir or below it.
+# Exits 0 when a terminal works in dir or below it.
 is_open() {
   local dir="$1" open_cwds="$2"
 
@@ -116,7 +121,7 @@ is_open() {
     END { exit !found }' <<<"${open_cwds}"
 }
 
-# Prints one row with its path last, where the tv channel reads it. ● marks what herdr has open.
+# Prints one row with its path last, where the tv channel reads it. ● marks what herdr-app has open.
 # width is the visible width of indent and label; path_style is an SGR code, 8 hides the path.
 print_row() {
   local indent="$1" label="$2" width="$3" path="$4" path_style="$5" open_cwds="$6"
@@ -136,7 +141,7 @@ cmd_rows() {
   local kind="${1:-all}"
   local open_cwds dir repo forks index glyph name root
 
-  open_cwds="$(herdr pane list 2>/dev/null | jq -r '.result.panes[] | .cwd, (.foreground_cwd // empty)')"
+  open_cwds="$(terminals 2>/dev/null | jq -r '.[].cwd')"
 
   zoxide query -l | while read -r dir; do
     # A main jj workspace holds its store in .jj/repo; a git-only repo has a .git directory.
@@ -190,7 +195,7 @@ cmd_fork() {
   read -r -e -i "$(random_name)" -p "New fork of ${repo}: " name
   destination="$(jj ws-add "${name}")" || die "Could not create the fork."
 
-  open_view workspace "${repo}/${name}" "${destination}"
+  open_view space "${repo}/${name}" "${destination}"
 }
 
 cmd_open() {
@@ -202,7 +207,7 @@ cmd_open() {
 
   tab="$(open_tab_of "${path}")"
   if [[ -n "${tab}" ]]; then
-    herdr tab focus "${tab}" >/dev/null
+    herdr-app do tab.select --id "${tab}" >/dev/null
     return
   fi
 
@@ -212,7 +217,7 @@ cmd_open() {
     label="$(basename "${root}")/${label}"
   fi
 
-  open_view workspace "${label}" "${path}"
+  open_view space "${label}" "${path}"
 }
 
 cmd_rm() {
@@ -229,10 +234,15 @@ cmd_rm() {
 
   while read -r kind id; do
     if [[ -n "${kind}" ]]; then
-      herdr "${kind}" close "${id}" >/dev/null
+      herdr-app do "${kind}.close" --id "${id}" --confirmed true >/dev/null
     fi
   done <<<"${views}"
 }
+
+# Run from a herdr-app key, the script owns its tab; run by tv, it doesn't.
+if [[ "${1:-}" == new || "${1:-}" == open || ("${1:-}" == rm && $# -eq 1) ]]; then
+  trap close_own_tab EXIT
+fi
 
 case "${1:-}" in
   new)
