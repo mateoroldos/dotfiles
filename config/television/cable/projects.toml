@@ -1,4 +1,4 @@
-# Repos zoxide knows, each followed by its jj forks. Herdr opens the pick through `jj-ws open`.
+# Repos zoxide knows, each followed by its jj forks. herdr-app opens the pick through `jj-ws open`.
 
 [metadata]
 name = "projects"
