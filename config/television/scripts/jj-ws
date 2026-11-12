@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # Open repos and their jj workspaces (forks) in herdr-app. The jj aliases ws-add and ws-remove own
 # the workspaces; this script adds the picker, the prompts, and the herdr-app views. herdr-app keys
-# start it in its own tab, in the focused terminal's folder, and it closes that tab when done.
+# start it in its own tab, in the focused terminal's folder and on that space's machine, and it
+# closes that tab when done. It drives herdr-app through hc labels, so it works on any machine
+# with herdr-core: a terminal labeled herdr.space and herdr.tab shows up in that tab.
 set -euo pipefail
 
 usage() {
@@ -34,62 +36,70 @@ random_name() {
   echo "${adjectives[RANDOM % ${#adjectives[@]}]}-${nouns[RANDOM % ${#nouns[@]}]}"
 }
 
-# Opens cwd as a tab or a herdr-app space: a shell on the left, and jjui on the right in a jj repo.
+new_id() {
+  echo "$1$(od -An -N16 -tx1 /dev/urandom | tr -d ' \n')"
+}
+
+# Prints a label of a terminal on this machine.
+label_of() {
+  hc get "$1" --json | jq -r --arg key "$2" '.labels[$key] // empty'
+}
+
+# Opens cwd as a new tab in this script's space, or as a new space: a shell on the left, and jjui
+# on the right in a jj repo. herdr-app names a new space after its folder, and numbers new tabs.
 open_view() {
-  local mode="$1" label="$2" cwd="$3"
+  local mode="$1" cwd="$2"
+  local space tab
+  local run=(hc run --bg --keep --no-parent --cwd "${cwd}")
 
-  herdr-app do "${mode}.new" --name "${label}" --folder "${cwd}" >/dev/null
-
-  if [[ -e "${cwd}/.jj" ]]; then
-    herdr-app do pane.split --direction right --argv '["jjui"]' >/dev/null
+  if [[ "${mode}" == tab ]]; then
+    space="$(label_of "${HC_TERMINAL_ID:?run jj-ws from herdr-app}" herdr.space)"
+  else
+    space="$(new_id sp)"
   fi
+  tab="$(new_id tb)"
+  run+=(--label "herdr.space=${space}" --label "herdr.tab=${tab}")
+
+  # herdr-app places a tab's newest terminal on the left.
+  if [[ -e "${cwd}/.jj" ]]; then
+    "${run[@]}" -- jjui >/dev/null
+  fi
+  "${run[@]}" >/dev/null
 }
 
-# Prints one JSON array of this computer's terminals: their space, tab and folder.
+# Prints one JSON array of this machine's terminals in herdr-app: their tab, place and folder.
 terminals() {
-  jq -n --argjson ls "$(herdr-app ls)" --argjson hc "$(hc ls --json)" '
-    ($hc.terminals | map(select(.address | contains("/") | not) | {(.address): .cwd}) | add // {}) as $cwd
-    | [$ls.spaces[] | .id as $space | .tabs[] | .id as $tab | .terminals[]
-        | select($cwd[.terminal]) | {space: $space, tab: $tab, terminal, cwd: $cwd[.terminal]}]'
+  hc ls --json | jq -r '.terminals[] | select(.address | contains("/") | not) | .address' |
+    while read -r address; do
+      hc get "${address}" --json
+    done |
+    jq -s 'map(select(.labels["herdr.tab"]) | {terminal: .address, tab: .labels["herdr.tab"], where: .labels.where, cwd})'
 }
 
-# Prints the tab of the first terminal working inside root, other than this script's, if any.
-open_tab_of() {
+# Prints where herdr-app shows the first terminal working inside root, other than this script, if any.
+open_where() {
   local root="$1"
 
   terminals | jq -r --arg root "${root}" --arg self "${HC_TERMINAL_ID:-}" '
     map(select(.terminal != $self and (.cwd == $root or (.cwd | startswith($root + "/")))))
-    | .[0].tab // empty'
+    | .[0].where // empty'
 }
 
-# Prints "tab <id>" or "space <id>" for each herdr-app view working inside root:
-# the whole space when all its tabs are inside, else each tab. This script's own
-# tab is left for the exit to close, and its space comes last.
-views_inside() {
+# Prints every terminal in a tab that works inside root, other than this script's tab. Ending them
+# closes those tabs, and a space goes with its last tab.
+terminals_inside() {
   local root="$1"
 
   terminals | jq -r --arg root "${root}" --arg self "${HC_TERMINAL_ID:-}" '
-    (map(select(.terminal == $self)) | .[0] // {}) as $me
-    | map(select(.tab != $me.tab))
-    | (map(select(.cwd == $root or (.cwd | startswith($root + "/"))) | .tab)) as $hit
-    | group_by(.space)
-    | map((map(.tab) | unique) as $tabs
-        | if ($tabs - $hit) == [] then [{kind: "space", id: .[0].space}]
-          else [$tabs[] | select(IN($hit[])) | {kind: "tab", id: .}] end)
-    | add // []
-    | sort_by(.id == $me.space)
-    | .[] | "\(.kind) \(.id)"'
+    (map(select(.terminal == $self)) | .[0].tab) as $own
+    | (map(select(.cwd == $root or (.cwd | startswith($root + "/"))) | .tab) - [$own]) as $hit
+    | .[] | select(.tab | IN($hit[])) | .terminal'
 }
 
-# Closes the tab herdr-app started this script in.
+# Ends this script's terminal, which closes the tab herdr-app started it in.
 close_own_tab() {
-  local tab
-
-  tab="$(herdr-app ls | jq -r --arg self "${HC_TERMINAL_ID:-}" \
-    '.spaces[].tabs[] | select(any(.terminals[]; .terminal == $self)) | .id')"
-
-  if [[ -n "${tab}" ]]; then
-    herdr-app do tab.close --id "${tab}" >/dev/null
+  if [[ -n "${HC_TERMINAL_ID:-}" ]]; then
+    hc kill "${HC_TERMINAL_ID}" >/dev/null
   fi
 }
 
@@ -105,11 +115,7 @@ cmd_new() {
   read -r -e -i "$(random_name)" -p "New workspace in ${repo}: " name
   destination="$(jj ws-add "${name}")" || die "Could not create the jj workspace."
 
-  if [[ "${mode}" == tab ]]; then
-    open_view tab "${name}" "${destination}"
-  else
-    open_view space "${repo}/${name}" "${destination}"
-  fi
+  open_view "${mode}" "${destination}"
 }
 
 # Exits 0 when a terminal works in dir or below it.
@@ -141,7 +147,7 @@ cmd_rows() {
   local kind="${1:-all}"
   local open_cwds dir repo forks index glyph name root
 
-  open_cwds="$(terminals 2>/dev/null | jq -r '.[].cwd')"
+  open_cwds="$(hc ls --json 2>/dev/null | jq -r '.terminals[] | select(.address | contains("/") | not) | .cwd')"
 
   zoxide query -l | while read -r dir; do
     # A main jj workspace holds its store in .jj/repo; a git-only repo has a .git directory.
@@ -195,48 +201,41 @@ cmd_fork() {
   read -r -e -i "$(random_name)" -p "New fork of ${repo}: " name
   destination="$(jj ws-add "${name}")" || die "Could not create the fork."
 
-  open_view space "${repo}/${name}" "${destination}"
+  open_view space "${destination}"
 }
 
 cmd_open() {
-  local path tab root label
+  local path where
 
   path="$(tv projects)" || exit 0
   [[ -n "${path}" ]] || exit 0
   path="${path/#\~/${HOME}}"
 
-  tab="$(open_tab_of "${path}")"
-  if [[ -n "${tab}" ]]; then
-    herdr-app do tab.select --id "${tab}" >/dev/null
+  # hc can't switch herdr-app's tab, so point at the open one instead.
+  where="$(open_where "${path}")"
+  if [[ -n "${where}" ]]; then
+    read -r -p "Already open in ${where}. Press enter to close." _ || true
     return
   fi
 
-  label="$(basename "${path}")"
-  if [[ -f "${path}/.jj/repo" ]]; then
-    root="$(jj --ignore-working-copy -R "${path}" workspace root --name default)"
-    label="$(basename "${root}")/${label}"
-  fi
-
-  open_view space "${label}" "${path}"
+  open_view space "${path}"
 }
 
 cmd_rm() {
   local dir="${1:-$(focused_dir)}"
-  local root views kind id
+  local root inside terminal
 
   cd "${dir/#\~/${HOME}}"
   root="$(realpath "$(jj root)")"
   [[ ! -d "${root}/.jj/repo" ]] || die "Only forks can be deleted: ${root} holds the repo."
-  views="$(views_inside "${root}")"
+  inside="$(terminals_inside "${root}")"
 
   jj ws-remove || die "Workspace kept."
   cd /
 
-  while read -r kind id; do
-    if [[ -n "${kind}" ]]; then
-      herdr-app do "${kind}.close" --id "${id}" --confirmed true >/dev/null
-    fi
-  done <<<"${views}"
+  for terminal in ${inside}; do
+    hc kill "${terminal}" >/dev/null
+  done
 }
 
 # Run from a herdr-app key, the script owns its tab; run by tv, it doesn't.
