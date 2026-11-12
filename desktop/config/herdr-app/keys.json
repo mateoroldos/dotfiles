@@ -51,6 +51,10 @@
     "ctrl-space shift-i": { "command": "tab.new", "args": { "name": "nvim", "argv": ["nvim"] } },
     "ctrl-space shift-y": { "command": "tab.new", "args": { "name": "yazi", "argv": ["yazi"] } },
     "ctrl-space o": { "command": "tab.new", "args": { "name": "prs", "argv": ["tv", "prs"] } },
+    "ctrl-space f": { "command": "tab.new", "args": { "name": "jj-ws", "argv": ["/home/runguinator/dotfiles/config/television/scripts/jj-ws", "new", "tab"] } },
+    "ctrl-space shift-f": { "command": "tab.new", "args": { "name": "jj-ws", "argv": ["/home/runguinator/dotfiles/config/television/scripts/jj-ws", "new", "space"] } },
+    "ctrl-space p": { "command": "tab.new", "args": { "name": "jj-ws", "argv": ["/home/runguinator/dotfiles/config/television/scripts/jj-ws", "open"] } },
+    "ctrl-space d": { "command": "tab.new", "args": { "name": "jj-ws", "argv": ["/home/runguinator/dotfiles/config/television/scripts/jj-ws", "rm"] } },
 
     "alt-1": "space.select:1",
     "alt-2": "space.select:2",
