@@ -15,7 +15,7 @@ desktop/           desktop-only configs and keyd/default.conf
 
 Configs are linked one file at a time. After adding or deleting a file under `config/`, run `mise dotfiles apply`. On the desktop, run `mise -E desktop dotfiles apply`: `desktop/config/` is declared in `mise.desktop.toml`, which loads only with `-E desktop`.
 
-herdr-app reloads a file only when its link in `~/.config/herdr-app` changes. After editing one here, run `touch -h ~/.config/herdr-app/<file>`. Its theme comes from `settings.json`; picking another theme in the app overrides it for that layout.
+herdr-app reloads a file only when its link in `~/.config/herdr-app` changes. After editing one here, run `touch -h ~/.config/herdr-app/<file>`. Its theme comes from `settings.json`; picking another theme in the app overrides it for that layout. After changing `font`, restart it: a font switched while it runs draws too heavy. The `personal` layout adds ctrl+hjkl pane moves (the `vim-nav` mod); pick it once per machine: `herdr-app do layout.switch --name personal`.
 
 Dev tools live in `config/mise/config.toml`, mise's global config. Add one with `mise use -g <tool>`.
 

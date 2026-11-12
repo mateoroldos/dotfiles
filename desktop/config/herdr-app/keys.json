@@ -104,6 +104,10 @@
     "shift-f2": "space.rename"
   },
   "terminal": {
+    "ctrl-h": "vim-nav.left",
+    "ctrl-j": "vim-nav.down",
+    "ctrl-k": "vim-nav.up",
+    "ctrl-l": "vim-nav.right",
     "ctrl-backspace": "send:\u0017",
     "ctrl-left": "send:\u001bb",
     "ctrl-right": "send:\u001bf",
