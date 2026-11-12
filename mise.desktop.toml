@@ -5,6 +5,8 @@
 # IBM Plex Mono is the terminal face; symbols-mono supplies nerd icons as a fallback layer
 "pacman:ttf-ibm-plex" = "latest"
 "pacman:ttf-nerd-fonts-symbols-mono" = "latest"
+# Lilex is Plex Mono with programming ligatures, herdr-app's terminal face
+"pacman:ttf-lilex-nerd" = "latest"
 "pacman:discord" = "latest"
 "pacman:bitwarden" = "latest"
 "pacman:vlc" = "latest"
