@@ -43,6 +43,8 @@ run = [
   "herdr plugin install plannotator/herdr-annotate --yes",
   # Downloads Chrome for agent-browser, plus the system libraries Linux needs to run it.
   "agent-browser install --with-deps",
+  # herdr-core keeps terminals alive for herdr-app on any machine. Installed once; the app updates it.
+  "command -v herdr-core >/dev/null || curl -fsSL https://releases.herdr.dev/core/install.sh | sh",
 ]
 
 [dotfiles]

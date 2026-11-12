@@ -19,6 +19,11 @@ notify = ["keyd"]
 state = "running"
 enabled = true
 
+# A hook, not a task: mise combines hooks across config files, so this adds to
+# mise.toml's bootstrap task instead of replacing it. Installed once; the app updates itself.
+[bootstrap.hooks.final]
+run = "test -e ~/.local/share/herdr-app || curl -fsSL https://releases.herdr.dev/app/install.sh | sh"
+
 [dotfile_groups.desktop]
 root = "desktop/config"
 target = "~/.config"
