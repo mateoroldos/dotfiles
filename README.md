@@ -15,7 +15,7 @@ desktop/           desktop-only configs and keyd/default.conf
 
 Configs are linked one file at a time. After adding or deleting a file under `config/` or `desktop/config/`, run `mise dotfiles apply`.
 
-herdr-app reloads a file only when its link in `~/.config/herdr-app` changes. After editing one here, run `touch -h ~/.config/herdr-app/<file>`. It keeps the chosen theme in its own state, so pick it once per machine: `herdr-app do app.theme --name mellifluous`.
+herdr-app reloads a file only when its link in `~/.config/herdr-app` changes. After editing one here, run `touch -h ~/.config/herdr-app/<file>`. Its theme comes from `settings.json`; picking another theme in the app overrides it for that layout.
 
 Dev tools live in `config/mise/config.toml`, mise's global config. Add one with `mise use -g <tool>`.
 

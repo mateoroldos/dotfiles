@@ -1,0 +1,11 @@
+{
+  "zoom": 1.1,
+  "sounds": {
+    "enabled": true
+  },
+  "font": "Lilex Nerd Font Mono",
+  "font_ligatures": true,
+  "ui_font": "IBM Plex Sans",
+  "minimum_contrast": 1.0,
+  "theme": "mellifluous"
+}
