@@ -16,6 +16,11 @@
 source = "desktop/keyd/default.conf"
 notify = ["keyd"]
 
+# Only the laptop's built-in keyboard swaps alt and meta
+[bootstrap.files."/etc/keyd/laptop.conf"]
+source = "desktop/keyd/laptop.conf"
+notify = ["keyd"]
+
 [bootstrap.services.keyd]
 state = "running"
 enabled = true
